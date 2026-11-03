@@ -47,8 +47,7 @@ Stop at the first option that works:
 - Code you move or merge keeps its error handling.
 - Between options of equal size, pick the one that handles edge cases correctly.
 - Do not add defensive checks for cases that cannot happen.
-- Match the surrounding style, including line endings (`.gitignore` and
-  `check_naming.py` use CRLF).
+- Match the surrounding style.
 
 Never cut: anything the user asked for, error handling that prevents data loss, or input
 validation where data enters the game (files, network, user input).
@@ -65,15 +64,22 @@ validation where data enters the game (files, network, user input).
 .
 ├── mise.toml          # Pinned tools and all tasks (run `mise tasks`)
 ├── pyproject.toml     # Pinned Python tools, locked in uv.lock
-├── export_game.py     # Installs export templates and exports builds
-├── check_naming.py    # File/directory naming checker
+├── tools/             # Python scripts used by the mise tasks
 ├── assets/            # Source art (.blend, .psd, .xcf); not loaded by Godot
 └── game/              # The Godot project (project.godot lives here)
-    ├── assets/        # Imported assets (models, fonts, maps)
-    ├── objects/       # Reusable scenes (player, bullet, bulb, lasers)
-    ├── scenes/        # Top-level scenes (main, hud, crystal_picker)
-    └── scripts/       # All GDScript
+    ├── assets/        # Imported assets (models, fonts, maps, sounds)
+    ├── main/          # Main scene, round manager and camera
+    ├── player/        # Player scene, flashlight, input, movement and shooting
+    ├── crystals/      # Crystal registry and the crystal picker
+    ├── hud/           # HUD and dev console
+    ├── bulb/          # Bulbs that bullets recolor
+    ├── bullet/        # Light bullets
+    ├── lasers/        # Laser and strobe hazards
+    └── common/        # Shared constants, groups and teams
 ```
+
+Each feature folder keeps a scene and its script side by side (`player.tscn` next to
+`player.gd`).
 
 ## Commands
 
@@ -93,32 +99,30 @@ every pull request.
 
 ## Architecture
 
-- `scripts/main.gd` is a small state machine (`PLAYING`, `ROUND_END`, `PICKING`). It
-  starts rounds through `RoundManager`, shows the crystal picker to the round loser and
-  applies the picked crystal.
-- `scripts/round_manager.gd` owns the round timer and scores. Scores are counted per
-  team color hex from the bulbs in the `bulbs` group.
-- `scripts/player.gd` wires together input, movement, shooting, animation and team
-  color.
+- `main/main.gd` is a small state machine (`PLAYING`, `ROUND_END`, `PICKING`). It starts
+  rounds through `RoundManager`, shows the crystal picker to the round loser and applies
+  the picked crystal.
+- `main/round_manager.gd` owns the round timer and scores. Scores are counted per team
+  color hex from the bulbs in the `bulbs` group.
+- `player/player.gd` wires together input, movement, shooting, animation and team color.
 - Player abilities use the decorator pattern:
   - Movement: `MoverInterface` → `BaseMover`, wrapped by subclasses of `MoverDecorator`
-    in `scripts/movement/decorators/`.
+    in `player/movement/decorators/`.
   - Shooting: `ShooterInterface` → `BaseShooter`, wrapped by subclasses of
-    `ShooterDecorator` in `scripts/shooting/decorators/`. Decorators adjust a
+    `ShooterDecorator` in `player/shooting/decorators/`. Decorators adjust a
     `ShootingContext` and pass it down the chain.
   - `CrystalRegistry` maps crystal names to decorator classes. `Player` stores the names
     and rebuilds the decorator chain whenever a crystal is added.
 - Input is abstracted by `InputInterface`, with keyboard/mouse, gamepad, dev and bot
-  implementations in `scripts/input/`.
-- Group names and tuning constants live in `scripts/utils/constants.gd`. The `Groups`
-  autoload (`scripts/registries/groups.gd`) returns typed group members.
+  implementations in `player/input/`.
+- Group names and tuning constants live in `common/constants.gd`. The `Groups` autoload
+  (`common/groups.gd`) returns typed group members.
 
 ### Adding a crystal
 
-1. Create a decorator in `scripts/movement/decorators/` or
-   `scripts/shooting/decorators/` that extends `MoverDecorator` or `ShooterDecorator`
-   and declares a `class_name`.
-1. Register it in the matching dictionary in `scripts/crystal_registry.gd`.
+1. Create a decorator in `player/movement/decorators/` or `player/shooting/decorators/`
+   that extends `MoverDecorator` or `ShooterDecorator` and declares a `class_name`.
+1. Register it in the matching dictionary in `crystals/crystal_registry.gd`.
 
 ## Conventions
 
@@ -126,7 +130,8 @@ every pull request.
 - Use static typing for variables, parameters and return types.
 - Every reusable script declares a `class_name`.
 - File and directory names are `snake_case` (`ALL_CAPS` for files like `README.md`).
-  Scene files match their root node (`player.tscn` → `Player`).
+  Scene files match their root node (`player.tscn` → `Player`). Source art in the root
+  `assets/` keeps its names, because `.blend` files link textures by file name.
 - Code must pass `gdformat` and `gdlint`. Use tabs for indentation in GDScript.
 - Commit the `.uid` file next to each script, since scenes reference scripts by UID.
 - Do not edit `.godot/` or `build/`. They are generated.

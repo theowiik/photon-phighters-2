@@ -10,7 +10,7 @@ import urllib.request
 import zipfile
 from pathlib import Path
 
-ROOT = Path(__file__).parent
+ROOT = Path(__file__).parent.parent
 GAME_DIR = ROOT / "game"
 RELEASES_URL = "https://github.com/godotengine/godot/releases/download"
 TEMPLATES = [

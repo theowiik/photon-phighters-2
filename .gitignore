@@ -1,3 +1,9 @@
-.ignore/
-godot/
 .venv/
+.ignore/
+*.blend[0-9]*
+
+.godot/
+build/
+
+**/.vscode/*
+!**/.vscode/settings.json
