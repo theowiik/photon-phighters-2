@@ -47,7 +47,8 @@ Stop at the first option that works:
 - Code you move or merge keeps its error handling.
 - Between options of equal size, pick the one that handles edge cases correctly.
 - Do not add defensive checks for cases that cannot happen.
-- Match the surrounding style, including line endings (the root `Makefile` uses CRLF).
+- Match the surrounding style, including line endings (`.gitignore` and
+  `check_naming.py` use CRLF).
 
 Never cut: anything the user asked for, error handling that prevents data loss, or input
 validation where data enters the game (files, network, user input).
@@ -62,11 +63,12 @@ validation where data enters the game (files, network, user input).
 
 ```
 .
-├── Makefile           # Entry point for all tasks (run `make` for help)
+├── mise.toml          # Pinned tools and all tasks (run `mise tasks`)
+├── pyproject.toml     # Pinned Python tools, locked in uv.lock
+├── export_game.py     # Installs export templates and exports builds
 ├── check_naming.py    # File/directory naming checker
 ├── assets/            # Source art (.blend, .psd, .xcf); not loaded by Godot
 └── game/              # The Godot project (project.godot lives here)
-    ├── flake.nix      # Nix apps: run, format, check, build
     ├── assets/        # Imported assets (models, fonts, maps)
     ├── objects/       # Reusable scenes (player, bullet, bulb, lasers)
     ├── scenes/        # Top-level scenes (main, hud, crystal_picker)
@@ -77,16 +79,17 @@ validation where data enters the game (files, network, user input).
 
 Run from the repository root.
 
-- `make run`: start the game (Nix fetches Godot).
-- `make format`: format Markdown, Python, Nix and GDScript.
-- `make check`: run all format checks, `gdlint`, the naming check and the GDScript
+- `mise run run`: start the game.
+- `mise run format`: format Markdown, Python and GDScript.
+- `mise run check`: run all format checks, `gdlint`, the naming check and the GDScript
   validator.
-- `make build`: export Linux and Windows builds.
+- `mise run build`: export Linux and Windows builds.
 
-Every target runs through Nix, so Nix and Make are the only requirements. The Godot
-parts are apps in `game/flake.nix` and work on Linux and Apple Silicon macOS. The first
-`make build` downloads about 1.2 GiB of export templates. CI (GitHub Actions) runs
-`make check` and `make build` on every pull request.
+mise is the only requirement. It installs the pinned Godot and uv on Windows, macOS and
+Linux, and uv installs the Python tools from `uv.lock`. The first `mise run build`
+downloads about 1.2 GiB of export templates into Godot's data directory. CI (GitHub
+Actions) runs `mise run check` on all three systems and `mise run build` on Linux for
+every pull request.
 
 ## Architecture
 

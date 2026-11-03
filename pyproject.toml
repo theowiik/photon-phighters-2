@@ -1,0 +1,12 @@
+[project]
+name = "photon-phighters-2"
+version = "0.0.0"
+requires-python = "==3.13.*"
+dependencies = [
+    "gdtoolkit==4.5.0",
+    "mdformat==1.0.0",
+    "ruff==0.17.3",
+]
+
+[tool.uv]
+package = false

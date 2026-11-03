@@ -1,0 +1,33 @@
+[tools]
+godot = "4.7.2-stable"
+uv = "0.13.7"
+
+[tasks.run]
+description = "Start the game"
+dir = "game"
+run = ["godot --headless --path . --import", "godot --path ."]
+
+[tasks.format]
+description = "Format all files"
+run = [
+    'uv run mdformat . --wrap 88 --end-of-line keep --exclude ".venv/**"',
+    "uv run ruff format .",
+    "uv run ruff check --select I --fix .",
+    "uv run --directory game gdformat .",
+]
+
+[tasks.check]
+description = "Check formatting, linting and naming"
+run = [
+    'uv run mdformat . --wrap 88 --end-of-line keep --check --exclude ".venv/**"',
+    "uv run ruff format --check .",
+    "uv run ruff check --select I .",
+    "uv run python check_naming.py",
+    "uv run --directory game gdformat . --check",
+    "uv run --directory game gdlint .",
+    "uv run --directory game python validate_gdscript.py",
+]
+
+[tasks.build]
+description = "Export Linux and Windows builds"
+run = "uv run python export_game.py"
