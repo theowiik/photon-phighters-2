@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  check:
+  check-os:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
@@ -20,6 +20,14 @@ jobs:
 
       - name: Check
         run: mise run check
+
+  check:
+    needs: check-os
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require check to pass on every OS
+        run: test "${{ needs.check-os.result }}" = success
 
   build-game:
     runs-on: ubuntu-latest
