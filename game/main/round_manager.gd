@@ -19,19 +19,35 @@ func _process(delta: float) -> void:
 	if not is_active:
 		return
 
-	time_remaining -= delta
+	time_remaining = maxf(time_remaining - delta, 0.0)
 	time_updated.emit(time_remaining)
 
 	if time_remaining <= 0:
-		time_remaining = 0
 		is_active = false
 		_finish_round()
 
 
-func start() -> void:
+func reset() -> void:
+	is_active = false
+	_clear_group(Constants.BULBS_GROUP)
+	_clear_group(Constants.BULLETS_GROUP)
 	time_remaining = Constants.ROUND_DURATION
-	is_active = true
+	time_updated.emit(time_remaining)
 	recalculate_scores()
+
+
+func start() -> void:
+	is_active = true
+
+
+func get_score(team: Team) -> int:
+	return scores.get(team.get_hex(), 0)
+
+
+func _clear_group(group: String) -> void:
+	for node in get_tree().get_nodes_in_group(group):
+		node.remove_from_group(group)
+		node.queue_free()
 
 
 func _connect_bulb_signals() -> void:
@@ -62,24 +78,11 @@ func recalculate_scores() -> void:
 
 
 func _finish_round() -> void:
-	var players = get_tree().get_nodes_in_group(Constants.PLAYERS_GROUP)
-	if players.size() < 2:
+	var players := Groups.get_all_players()
+	players.sort_custom(func(a: Player, b: Player): return get_score(a.team) > get_score(b.team))
+
+	if get_score(players[0].team) == get_score(players[1].team):
+		round_finished.emit(null, null)
 		return
 
-	var player_scores: Array = []
-	for player in players:
-		var player_score: int = scores.get(player.team.get_hex(), 0)
-		player_scores.append({"player": player, "score": player_score})
-
-	player_scores.sort_custom(func(a, b): return a.score > b.score)
-
-	var winner: Player = player_scores[0].player
-	var loser: Player = player_scores[1].player
-
-	# If tied, pick random winner/loser
-	if player_scores[0].score == player_scores[1].score:
-		players.shuffle()
-		winner = players[0]
-		loser = players[1]
-
-	round_finished.emit(winner, loser)
+	round_finished.emit(players[0], players[-1])

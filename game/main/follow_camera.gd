@@ -8,6 +8,7 @@ var offset: Vector3 = Vector3(0, 0, 100)
 
 func _ready() -> void:
 	follow = Groups.get_all_players()
+	_physics_process(1.0)
 
 
 func _physics_process(delta: float) -> void:

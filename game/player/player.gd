@@ -3,6 +3,7 @@ extends CharacterBody3D
 
 const MAX_HEALTH: float = 100.0
 const RESPAWN_DELAY: float = 1.5
+const SPAWN_PROTECTION: float = 1.0
 const HEALTH_BAR_SEGMENTS: int = 10
 
 @export var display_name: String = "P1"
@@ -12,6 +13,8 @@ var input: InputInterface
 var health: float = MAX_HEALTH
 var spawn_position: Vector3
 var is_knocked_out: bool = false
+var respawn_time_remaining: float = 0.0
+var protection_remaining: float = 0.0
 
 # Movement
 var mover: MoverInterface
@@ -56,10 +59,16 @@ func _ready():
 	_update_health_label()
 
 
-func _physics_process(delta):
+func _physics_process(delta: float) -> void:
 	if is_knocked_out:
+		respawn_time_remaining -= delta
+		if respawn_time_remaining <= 0.0:
+			respawn()
 		return
 
+	if protection_remaining > 0.0:
+		protection_remaining = maxf(protection_remaining - delta, 0.0)
+		_update_health_label()
 	input.update()
 	_process_shooting(delta)
 	_process_movement(delta)
@@ -111,12 +120,16 @@ func _process_movement(delta: float) -> void:
 	animation_manager.update(velocity, is_on_floor(), is_on_wall(), get_wall_normal())
 
 
+func is_bot() -> bool:
+	return input is NaiveBotInput
+
+
 func apply_impulse(impulse: Vector3) -> void:
 	external_velocity += impulse
 
 
 func take_damage(amount: float) -> void:
-	if is_knocked_out:
+	if is_knocked_out or protection_remaining > 0.0:
 		return
 
 	hurt_player.play()
@@ -134,29 +147,32 @@ func knock_out() -> void:
 	visible = false
 	collision_shape.set_deferred("disabled", true)
 	set_deferred("global_position", spawn_position)
-	get_tree().create_timer(RESPAWN_DELAY).timeout.connect(_respawn_if_knocked_out)
+	respawn_time_remaining = RESPAWN_DELAY
 
 
 func respawn() -> void:
 	is_knocked_out = false
 	health = MAX_HEALTH
+	respawn_time_remaining = 0.0
+	protection_remaining = SPAWN_PROTECTION
+	shoot_cooldown = 0.0
+	jump_count = 0
 	global_position = spawn_position
 	velocity = Vector3.ZERO
 	external_velocity = Vector3.ZERO
+	flashlight.global_position = flashlight.target_position.global_position
+	flashlight.linear_velocity = Vector3.ZERO
+	flashlight.angular_velocity = Vector3.ZERO
 	visible = true
 	collision_shape.set_deferred("disabled", false)
 	_update_health_label()
 
 
-func _respawn_if_knocked_out() -> void:
-	if is_knocked_out:
-		respawn()
-
-
 func _update_health_label() -> void:
 	var filled := ceili(health / MAX_HEALTH * HEALTH_BAR_SEGMENTS)
 	var bar := "█".repeat(filled) + "░".repeat(HEALTH_BAR_SEGMENTS - filled)
-	health_label.text = "%s %s" % [display_name, bar]
+	var shield := " SHIELD" if protection_remaining > 0.0 else ""
+	health_label.text = "%s %s%s" % [display_name, bar, shield]
 
 
 func apply_crystal(crystal_name: String) -> bool:

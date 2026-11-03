@@ -18,6 +18,13 @@ func _init(p_player_node: Node3D):
 
 func update() -> void:
 	_update_camera()
+	if player_node.get_viewport().gui_get_focus_owner() is LineEdit:
+		_shoot_pressed = false
+		_shoot_just_pressed = false
+		_jump_pressed = false
+		_jump_just_pressed = false
+		_movement = Vector2.ZERO
+		return
 
 	var prev_shoot = _shoot_pressed
 	_shoot_pressed = Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)

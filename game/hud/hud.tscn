@@ -1,49 +1,262 @@
-[gd_scene load_steps=3 format=3 uid="uid://dacw2gn4smkwj"]
+[gd_scene load_steps=6 format=3 uid="uid://dacw2gn4smkwj"]
 
 [ext_resource type="Script" uid="uid://fspuivr1mf8v" path="res://hud/hud.gd" id="1_ahhtf"]
 [ext_resource type="FontFile" uid="uid://b0he2rrpenx1d" path="res://assets/fonts/cascadia_mono.ttf" id="2_oo0fn"]
 
+[sub_resource type="Theme" id="Theme_hud"]
+default_font = ExtResource("2_oo0fn")
+default_font_size = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_panel"]
+content_margin_left = 24.0
+content_margin_top = 20.0
+content_margin_right = 24.0
+content_margin_bottom = 20.0
+bg_color = Color(0.035, 0.055, 0.1, 0.97)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.25, 0.4, 0.58, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_top"]
+content_margin_left = 16.0
+content_margin_top = 10.0
+content_margin_right = 16.0
+content_margin_bottom = 10.0
+bg_color = Color(0.025, 0.04, 0.075, 0.85)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
 [node name="HUD" type="Control"]
+process_mode = 3
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
+theme = SubResource("Theme_hud")
 script = ExtResource("1_ahhtf")
 
-[node name="ConsoleLineEdit" type="LineEdit" parent="."]
-layout_mode = 0
-offset_left = 24.0
-offset_top = 586.0
-offset_right = 337.0
-offset_bottom = 629.0
-theme_override_fonts/font = ExtResource("2_oo0fn")
+[node name="TopBackground" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 20.0
+offset_top = 16.0
+offset_right = -20.0
+offset_bottom = 126.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBox_top")
+
+[node name="Top" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 38.0
+offset_top = 24.0
+offset_right = -38.0
+offset_bottom = 118.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_constants/separation = 20
+
+[node name="Left" type="VBoxContainer" parent="Top"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="Score" type="RichTextLabel" parent="Top/Left"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/normal_font_size = 20
+theme_override_font_sizes/bold_font_size = 24
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+
+[node name="Wins" type="Label" parent="Top/Left"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+
+[node name="Clock" type="VBoxContainer" parent="Top"]
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+
+[node name="Round" type="Label" parent="Top/Clock"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "FIRST TO 3"
+horizontal_alignment = 1
+
+[node name="Time" type="Label" parent="Top/Clock"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 44
+text = "30"
+horizontal_alignment = 1
+
+[node name="Right" type="VBoxContainer" parent="Top"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="Score" type="RichTextLabel" parent="Top/Right"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/normal_font_size = 20
+theme_override_font_sizes/bold_font_size = 24
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+horizontal_alignment = 2
+
+[node name="Wins" type="Label" parent="Top/Right"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+horizontal_alignment = 2
+
+[node name="BottomBackground" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -90.0
+offset_right = -20.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBox_top")
+
+[node name="Bottom" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 38.0
+offset_top = -82.0
+offset_right = -38.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/separation = 40
+
+[node name="Left" type="Label" parent="Bottom"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 14
+autowrap_mode = 2
+
+[node name="Right" type="Label" parent="Bottom"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 14
+horizontal_alignment = 2
+autowrap_mode = 2
+
+[node name="Flash" type="Label" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 3
+theme_override_constants/shadow_offset_y = 3
+theme_override_font_sizes/font_size = 64
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="FlashTimer" type="Timer" parent="."]
+wait_time = 0.65
+one_shot = true
+
+[node name="Message" type="ColorRect" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.01, 0.02, 0.04, 0.5)
+
+[node name="Panel" type="PanelContainer" parent="Message"]
+layout_mode = 1
+anchor_left = 0.07
+anchor_top = 0.22
+anchor_right = 0.93
+anchor_bottom = 0.82
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBox_panel")
+
+[node name="Content" type="VBoxContainer" parent="Message/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="Title" type="Label" parent="Message/Panel/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Detail" type="Label" parent="Message/Panel/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="Start" type="Button" parent="Message/Panel/Content"]
+custom_minimum_size = Vector2(240, 44)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "START MATCH"
+
+[node name="Console" type="PanelContainer" parent="."]
+visible = false
+layout_mode = 1
+anchor_left = 0.03
+anchor_top = 0.38
+anchor_right = 0.65
+anchor_bottom = 0.95
+theme_override_styles/panel = SubResource("StyleBox_panel")
+
+[node name="Content" type="VBoxContainer" parent="Console"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Console/Content"]
+layout_mode = 2
+text = "DEV CONSOLE · F1 to close"
+
+[node name="ConsoleLabel" type="RichTextLabel" parent="Console/Content"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/normal_font_size = 13
+scroll_following = true
+
+[node name="ConsoleLineEdit" type="LineEdit" parent="Console/Content"]
+layout_mode = 2
 placeholder_text = "/help"
 
-[node name="ConsoleLabel" type="RichTextLabel" parent="."]
-layout_mode = 0
-offset_left = 28.0
-offset_top = 356.0
-offset_right = 608.0
-offset_bottom = 565.0
-theme_override_fonts/normal_font = ExtResource("2_oo0fn")
-theme_override_font_sizes/normal_font_size = 13
-
-[node name="TimeLabel" type="Label" parent="."]
-layout_mode = 0
-offset_left = 19.0
-offset_top = 31.0
-offset_right = 59.0
-offset_bottom = 54.0
-text = "time"
-
-[node name="ScoreLabel" type="RichTextLabel" parent="."]
-layout_mode = 0
-offset_left = 70.0
-offset_top = 109.0
-offset_right = 1116.0
-offset_bottom = 266.0
-text = "hello world"
-
-[connection signal="text_submitted" from="ConsoleLineEdit" to="." method="_on_console_line_edit_text_submitted"]
+[connection signal="timeout" from="FlashTimer" to="Flash" method="hide"]
+[connection signal="pressed" from="Message/Panel/Content/Start" to="." method="_on_start_pressed"]
+[connection signal="text_submitted" from="Console/Content/ConsoleLineEdit" to="." method="_on_console_line_edit_text_submitted"]

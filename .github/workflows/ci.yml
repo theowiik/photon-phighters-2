@@ -21,6 +21,9 @@ jobs:
       - name: Check
         run: mise run check
 
+      - name: Test gameplay
+        run: mise run test
+
   check:
     needs: check-os
     if: always()
