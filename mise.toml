@@ -2,6 +2,9 @@
 godot = "4.7.2-stable"
 uv = "0.13.7"
 
+[env]
+PYTHONUTF8 = "1"
+
 [tasks.run]
 description = "Start the game"
 dir = "game"
