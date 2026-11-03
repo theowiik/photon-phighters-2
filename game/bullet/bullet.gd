@@ -3,12 +3,15 @@ extends Area3D
 
 const BULB_SCENE: PackedScene = preload("res://bulb/bulb.tscn")
 const BULB_MERGE_RADIUS: float = 0.75
+const WOBBLE_FREQUENCY: float = 12.0
 
 var team: Team = Team.white()
 var velocity: Vector3 = Vector3.ZERO
 var speed: float = 10.0
 var lifetime: float = 3.0
 var damage: float = 10.0
+var wobble_amount: float = 0.0
+var _age: float = 0.0
 var _gravity: float = 3
 var _material: StandardMaterial3D
 var _hit: bool = false
@@ -35,8 +38,9 @@ func _ready():
 
 
 func _physics_process(delta: float) -> void:
+	_age += delta
 	velocity.y -= _gravity * delta
-	var movement: Vector3 = velocity * speed * delta
+	var movement: Vector3 = velocity * speed * delta + _wobble_offset(delta)
 
 	_ray_query.from = global_position
 	_ray_query.to = global_position + movement
@@ -49,6 +53,11 @@ func _physics_process(delta: float) -> void:
 		_handle_hit(result.collider)
 	else:
 		position += movement
+
+
+func _wobble_offset(delta: float) -> Vector3:
+	var sideways := Vector3(-velocity.y, velocity.x, 0).normalized()
+	return sideways * cos(_age * WOBBLE_FREQUENCY) * wobble_amount * WOBBLE_FREQUENCY * delta
 
 
 func set_direction(direction: Vector3):
