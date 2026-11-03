@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://f0xcms2iubf0"]
+
+[ext_resource type="Script" uid="uid://psdu5vyojlpu" path="res://lasers/laser.gd" id="1_qofad"]
+
+[node name="Laser" type="Node3D"]
+script = ExtResource("1_qofad")
+
+[node name="RayCast3D" type="RayCast3D" parent="."]
+target_position = Vector3(0, 0, -100)
