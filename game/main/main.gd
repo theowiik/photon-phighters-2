@@ -72,5 +72,5 @@ func on_crystal_picked(crystal_name: String) -> void:
 
 
 func _on_ob_body_entered(body: Node3D) -> void:
-	if body.is_in_group(Constants.PLAYERS_GROUP):
-		body.global_position = Vector3(0, 0, 0)
+	if body is Player:
+		body.knock_out()

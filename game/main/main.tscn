@@ -26,7 +26,7 @@ script = ExtResource("1_tefeu")
 [node name="RoundManager" parent="." instance=ExtResource("2_o6xl0")]
 
 [node name="Player1" parent="." instance=ExtResource("1_o5qli")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9574709, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 1.5, 0)
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.650961, 13.587667, 30.053001)
@@ -47,7 +47,8 @@ transform = Transform3D(1, 0, 0, 0, 0.33293483, 0.94294983, 0, -0.9429499, 0.332
 [node name="HUD" parent="." instance=ExtResource("5_tbgi4")]
 
 [node name="Player2" parent="." instance=ExtResource("1_o5qli")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.7508955, 1.7889354, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 0.5, 0)
+display_name = "P2"
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_tbgi4")

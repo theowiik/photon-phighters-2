@@ -1,9 +1,17 @@
 class_name Player
 extends CharacterBody3D
 
+const MAX_HEALTH: float = 100.0
+const RESPAWN_DELAY: float = 1.5
+const HEALTH_BAR_SEGMENTS: int = 10
+
+@export var display_name: String = "P1"
+
 var team: Team
 var input: InputInterface
-var health: float = 100.0
+var health: float = MAX_HEALTH
+var spawn_position: Vector3
+var is_knocked_out: bool = false
 
 # Movement
 var mover: MoverInterface
@@ -20,14 +28,18 @@ var shoot_cooldown: float = 0.0
 var animation_manager: AnimationManager
 
 @onready var aim_pivot: Node3D = $AimPivot
+@onready var collision_shape: CollisionShape3D = $CollisionShape3D
 @onready var flashlight: Flashlight = $Flashlight
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var body: Node3D = $Body
 @onready var health_label: Label3D = $HealthLabel
-@onready var hurt_player: AudioStreamPlayer3D = $HurtPlayer
+@onready var hurt_player: AudioStreamPlayer = $HurtPlayer
+@onready var shoot_player: AudioStreamPlayer = $ShootPlayer
+@onready var jump_player: AudioStreamPlayer = $JumpPlayer
 
 
 func _ready():
+	spawn_position = global_position
 	input = KeyboardMouseInput.new(self)
 
 	base_mover = BaseMover.new(5.0)
@@ -41,9 +53,13 @@ func _ready():
 	flashlight.aim_origin = aim_pivot
 
 	set_team(Team.red())
+	_update_health_label()
 
 
 func _physics_process(delta):
+	if is_knocked_out:
+		return
+
 	input.update()
 	_process_shooting(delta)
 	_process_movement(delta)
@@ -65,6 +81,7 @@ func _process_shooting(delta: float) -> void:
 
 		shooter.shoot(context)
 		shoot_cooldown = shooter.get_shoot_delay()
+		shoot_player.play()
 
 
 func _process_movement(delta: float) -> void:
@@ -77,6 +94,8 @@ func _process_movement(delta: float) -> void:
 
 	velocity = mover.process_movement(input.get_movement(), delta, context)
 	jump_count = context.jump_count
+	if velocity.y > context.velocity_y + 1.0:
+		jump_player.play()
 
 	velocity += external_velocity
 	external_velocity = external_velocity.lerp(Vector3.ZERO, 10.0 * delta)
@@ -97,9 +116,47 @@ func apply_impulse(impulse: Vector3) -> void:
 
 
 func take_damage(amount: float) -> void:
+	if is_knocked_out:
+		return
+
 	hurt_player.play()
-	health -= amount
-	health_label.text = str(health)
+	health = maxf(health - amount, 0.0)
+	_update_health_label()
+	if health == 0.0:
+		knock_out()
+
+
+func knock_out() -> void:
+	if is_knocked_out:
+		return
+
+	is_knocked_out = true
+	visible = false
+	collision_shape.set_deferred("disabled", true)
+	set_deferred("global_position", spawn_position)
+	get_tree().create_timer(RESPAWN_DELAY).timeout.connect(_respawn_if_knocked_out)
+
+
+func respawn() -> void:
+	is_knocked_out = false
+	health = MAX_HEALTH
+	global_position = spawn_position
+	velocity = Vector3.ZERO
+	external_velocity = Vector3.ZERO
+	visible = true
+	collision_shape.set_deferred("disabled", false)
+	_update_health_label()
+
+
+func _respawn_if_knocked_out() -> void:
+	if is_knocked_out:
+		respawn()
+
+
+func _update_health_label() -> void:
+	var filled := ceili(health / MAX_HEALTH * HEALTH_BAR_SEGMENTS)
+	var bar := "█".repeat(filled) + "░".repeat(HEALTH_BAR_SEGMENTS - filled)
+	health_label.text = "%s %s" % [display_name, bar]
 
 
 func apply_crystal(crystal_name: String) -> bool:
@@ -144,3 +201,4 @@ func _apply_team_color() -> void:
 					mesh_instance.set_surface_override_material(0, material)
 
 	flashlight.set_color(team.color)
+	health_label.modulate = team.color
