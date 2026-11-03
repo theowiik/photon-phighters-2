@@ -1,13 +1,6 @@
 class_name Player
 extends CharacterBody3D
 
-# Controller
-@export var device_id: int = 0
-@export var use_bot_input: bool = false
-
-var team_presets: Array[Callable] = [
-	Team.red, Team.blue, Team.green, Team.orange, Team.purple, Team.cyan, Team.yellow, Team.pink
-]
 var team: Team
 var input: InputInterface
 var health: float = 100.0
@@ -35,12 +28,7 @@ var animation_manager: AnimationManager
 
 
 func _ready():
-	team = team_presets.pick_random().call()
-
-	if use_bot_input:
-		input = NaiveBotInput.new(self)
-	else:
-		input = DevInput.new(self)
+	input = KeyboardMouseInput.new(self)
 
 	base_mover = BaseMover.new(5.0)
 	mover = base_mover
@@ -52,7 +40,7 @@ func _ready():
 	flashlight.target_position = $AimPivot/DesiredFlashlightPosition
 	flashlight.aim_origin = aim_pivot
 
-	_apply_team_color()
+	set_team(Team.red())
 
 
 func _physics_process(delta):
@@ -138,6 +126,11 @@ func _rebuild_shooting_chain():
 	shooter = base_shooter
 	for crystal_name in shooter_decorator_names:
 		shooter = CrystalRegistry.create_shooting_decorator(crystal_name, shooter)
+
+
+func set_team(new_team: Team) -> void:
+	team = new_team
+	_apply_team_color()
 
 
 func _apply_team_color() -> void:

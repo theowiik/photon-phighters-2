@@ -19,11 +19,13 @@ func _init(p_device_id: int = 0):
 
 func update() -> void:
 	var prev_shoot = _shoot_pressed
-	_shoot_pressed = _get_axis(JOY_AXIS_TRIGGER_RIGHT) > 0.5
+	_shoot_pressed = (
+		_get_axis(JOY_AXIS_TRIGGER_RIGHT) > 0.5 or _is_button_pressed(JOY_BUTTON_RIGHT_SHOULDER)
+	)
 	_shoot_just_pressed = _shoot_pressed and not prev_shoot
 
 	var prev_jump = _jump_pressed
-	_jump_pressed = _get_axis(JOY_AXIS_TRIGGER_LEFT) > 0.5
+	_jump_pressed = _get_axis(JOY_AXIS_TRIGGER_LEFT) > 0.5 or _is_button_pressed(JOY_BUTTON_A)
 	_jump_just_pressed = _jump_pressed and not prev_jump
 
 	_movement = _compute_movement()

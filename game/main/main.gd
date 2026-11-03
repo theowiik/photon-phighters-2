@@ -10,13 +10,31 @@ var current_state: GameState = GameState.PLAYING
 
 @onready var hud: HUD = $HUD
 @onready var round_manager: RoundManager = $RoundManager
+@onready var players: Array[Player] = [$Player1, $Player2]
 
 
 func _ready() -> void:
+	_assign_teams()
+	_assign_inputs()
 	round_manager.time_updated.connect(hud.update_time)
 	round_manager.scores_updated.connect(hud.update_scores)
 	round_manager.round_finished.connect(on_round_finished)
 	_change_state(GameState.PLAYING)
+
+
+func _assign_teams() -> void:
+	var teams := Team.contrasting_pair()
+	for i in players.size():
+		players[i].set_team(teams[i])
+
+
+func _assign_inputs() -> void:
+	var gamepads := Input.get_connected_joypads()
+	players[0].input = KeyboardMouseInput.new(players[0])
+	if gamepads.is_empty():
+		players[1].input = NaiveBotInput.new(players[1])
+	else:
+		players[1].input = GamepadInput.new(gamepads[0])
 
 
 func _change_state(new_state: GameState) -> void:
