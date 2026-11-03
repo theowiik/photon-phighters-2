@@ -2,6 +2,7 @@ class_name Bullet
 extends Area3D
 
 const BULB_SCENE: PackedScene = preload("res://bulb/bulb.tscn")
+const BULB_MERGE_RADIUS: float = 0.75
 
 var team: Team = Team.white()
 var velocity: Vector3 = Vector3.ZERO
@@ -72,13 +73,28 @@ func _handle_hit(body: Node3D) -> void:
 	if body is Player:
 		body.take_damage(damage)
 	else:
-		var spawn_pos := global_position
-		var bulb = BULB_SCENE.instantiate()
-		bulb.set_team(team)
-		get_tree().current_scene.add_child(bulb)
-		bulb.global_position = spawn_pos
+		_paint()
 
 	queue_free()
+
+
+func _paint() -> void:
+	var nearby_bulb := _find_bulb_near(global_position)
+	if nearby_bulb:
+		nearby_bulb.claim(team)
+		return
+
+	var bulb: Bulb = BULB_SCENE.instantiate()
+	bulb.set_team(team)
+	get_tree().current_scene.add_child(bulb)
+	bulb.global_position = global_position
+
+
+func _find_bulb_near(point: Vector3) -> Bulb:
+	for bulb in Groups.get_all_bulbs():
+		if bulb.global_position.distance_to(point) < BULB_MERGE_RADIUS:
+			return bulb
+	return null
 
 
 func _on_life_timer_timeout() -> void:

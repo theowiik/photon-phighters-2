@@ -1,3 +1,4 @@
+class_name Bulb
 extends Area3D
 
 signal bulb_hit(new_team: Team)
@@ -39,12 +40,15 @@ func _apply_team(new_team: Team) -> void:
 		_material.emission = team.color
 
 
+func claim(new_team: Team) -> void:
+	if team.color == new_team.color:
+		return
+
+	_apply_team(new_team)
+	bulb_hit.emit(new_team)
+
+
 func _on_area_entered(area: Area3D) -> void:
 	if area.is_in_group(Constants.BULLETS_GROUP):
-		var new_team: Team = area.team
-
-		if team.color != new_team.color:
-			_apply_team(new_team)
-			bulb_hit.emit(new_team)
-
+		claim(area.team)
 		area.queue_free()
