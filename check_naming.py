@@ -14,6 +14,7 @@ IGNORE = {
     ".git",
     ".godot",
     "build",
+    ".venv",
     "__pycache__",
     ".import",
     ".ruff_cache",

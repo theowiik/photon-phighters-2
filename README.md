@@ -1,24 +1,21 @@
 # project-epic-footsies-2
 
-- [Getting Godot Engine](#getting-godot-engine)
+- [Getting started](#getting-started)
 - [Credits](#credits)
   - [Fonts](#fonts)
 
-## Getting Godot Engine
+## Getting started
 
-Download Godot 4.5.1: https://godotengine.org/download/archive/4.5.1-stable/
-
-Util command to download Godot for Windows to `godot/` (using Nix).
+Install [mise](https://mise.jdx.dev/getting-started.html), then from the repository
+root:
 
 ```bash
-nix-shell -p wget unzip bash --run "bash -c '
-  rm -rf godot && \
-  mkdir godot && \
-  wget https://github.com/godotengine/godot/releases/download/4.5.1-stable/Godot_v4.5.1-stable_win64.exe.zip -O godot/godot.zip && \
-  unzip -q godot/godot.zip -d godot && \
-  rm godot/godot.zip
-'"
+mise trust
+mise run run
 ```
+
+mise installs the pinned Godot and Python tools on Windows, macOS and Linux. Run
+`mise tasks` to list everything you can do (`run`, `check`, `format`, `build`).
 
 ## Credits
 
