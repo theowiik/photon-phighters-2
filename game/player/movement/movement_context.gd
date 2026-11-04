@@ -1,11 +1,13 @@
 class_name MovementContext
 extends RefCounted
 
+var velocity_x: float = 0.0
 var velocity_y: float = 0.0
 var is_on_floor: bool = false
 var is_on_wall: bool = false
 var wall_normal: Vector3 = Vector3.ZERO
 var jump_pressed: bool = false
+var jump_held: bool = false
 var jump_count: int = 0
 var jump_requested: bool = false
 var wall_jump_requested: bool = false

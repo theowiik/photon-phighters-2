@@ -10,6 +10,5 @@ func _init(mover: MoverInterface, multiplier: float = 1.6):
 
 
 func process_movement(input_vector: Vector2, delta: float, context: MovementContext) -> Vector3:
-	var velocity = wrapped_mover.process_movement(input_vector, delta, context)
-	velocity.x *= speed_multiplier
-	return velocity
+	context.speed_multiplier *= speed_multiplier
+	return wrapped_mover.process_movement(input_vector, delta, context)

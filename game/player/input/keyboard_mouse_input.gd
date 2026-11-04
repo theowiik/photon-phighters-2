@@ -31,7 +31,7 @@ func update() -> void:
 	_shoot_just_pressed = _shoot_pressed and not prev_shoot
 
 	var prev_jump = _jump_pressed
-	_jump_pressed = Input.is_key_pressed(KEY_SPACE)
+	_jump_pressed = Input.is_key_pressed(KEY_SPACE) or Input.is_key_pressed(KEY_W)
 	_jump_just_pressed = _jump_pressed and not prev_jump
 
 	_movement = _compute_movement()
@@ -96,3 +96,7 @@ func is_shoot_pressed() -> bool:
 
 func is_jump_just_pressed() -> bool:
 	return _jump_just_pressed
+
+
+func is_jump_held() -> bool:
+	return _jump_pressed

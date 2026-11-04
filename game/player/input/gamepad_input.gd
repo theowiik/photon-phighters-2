@@ -88,3 +88,7 @@ func _is_button_pressed(button: JoyButton) -> bool:
 
 func _get_axis(axis: JoyAxis) -> float:
 	return Input.get_joy_axis(device_id, axis)
+
+
+func is_jump_held() -> bool:
+	return _jump_pressed

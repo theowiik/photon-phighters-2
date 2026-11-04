@@ -71,7 +71,7 @@ func _controls_text() -> String:
 	if Input.get_connected_joypads().is_empty():
 		player_two = "Bot · connect a gamepad to play against a friend"
 	return (
-		"P1  A/D move · Space jump · Mouse aim · Click shoot\nP2  %s\nFirst to %d rounds"
+		"P1  A/D move · W or Space jump · Mouse aim · Click shoot\nP2  %s\nFirst to %d rounds"
 		% [player_two, Constants.ROUNDS_TO_WIN]
 	)
 

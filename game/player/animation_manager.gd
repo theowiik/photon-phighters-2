@@ -5,6 +5,7 @@ enum State {GROUNDED, INITIATE_JUMP, JUMP_UP, JUMP_DOWN, LANDING, IDLE, WALL_GLI
 
 const DEFAULT_BLEND: float = 0.1
 const LANDING_BLEND: float = 0.05
+const WALK_ANIMATION_SPEED: float = 5.0
 
 var animation_player: AnimationPlayer
 var body: Node3D
@@ -38,6 +39,8 @@ func update(
 
 	if new_state != current_state:
 		_transition_to(new_state)
+	if current_state == State.GROUNDED:
+		animation_player.speed_scale = clampf(absf(velocity.x) / WALK_ANIMATION_SPEED, 0.6, 2.0)
 
 	was_on_floor = is_on_floor
 

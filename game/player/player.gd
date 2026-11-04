@@ -21,7 +21,6 @@ var mover: MoverInterface
 var base_mover: MoverInterface
 var mover_decorator_names: Array[String] = []
 var jump_count: int = 0
-var external_velocity: Vector3 = Vector3.ZERO
 
 # Shooting
 var shooter: ShooterInterface
@@ -45,7 +44,7 @@ func _ready():
 	spawn_position = global_position
 	input = KeyboardMouseInput.new(self)
 
-	base_mover = BaseMover.new(5.0)
+	base_mover = BaseMover.new()
 	mover = base_mover
 
 	base_shooter = BaseShooter.new()
@@ -97,6 +96,8 @@ func _process_movement(delta: float) -> void:
 	var context = MovementContext.new(
 		velocity.y, is_on_floor(), input.is_jump_just_pressed(), jump_count
 	)
+	context.velocity_x = velocity.x
+	context.jump_held = input.is_jump_held()
 	context.is_on_wall = is_on_wall()
 	if context.is_on_wall:
 		context.wall_normal = get_wall_normal()
@@ -105,11 +106,6 @@ func _process_movement(delta: float) -> void:
 	jump_count = context.jump_count
 	if velocity.y > context.velocity_y + 1.0:
 		jump_player.play()
-
-	velocity += external_velocity
-	external_velocity = external_velocity.lerp(Vector3.ZERO, 10.0 * delta)
-	if external_velocity.length() < 0.1:
-		external_velocity = Vector3.ZERO
 
 	var locked_z = global_position.z
 	velocity.z = 0
@@ -125,7 +121,7 @@ func is_bot() -> bool:
 
 
 func apply_impulse(impulse: Vector3) -> void:
-	external_velocity += impulse
+	velocity += impulse
 
 
 func take_damage(amount: float) -> void:
@@ -159,7 +155,6 @@ func respawn() -> void:
 	jump_count = 0
 	global_position = spawn_position
 	velocity = Vector3.ZERO
-	external_velocity = Vector3.ZERO
 	flashlight.global_position = flashlight.target_position.global_position
 	flashlight.linear_velocity = Vector3.ZERO
 	flashlight.angular_velocity = Vector3.ZERO

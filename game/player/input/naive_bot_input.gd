@@ -6,6 +6,7 @@ const WANDER_DURATION: float = 0.5
 const RETARGET_INTERVAL: float = 0.25
 const TARGET_RANGE: float = 10.0
 const JUMP_INTERVAL: float = 0.8
+const JUMP_HOLD_TIME: float = 0.3
 
 var player_node: Player
 var current_target: Node3D = null
@@ -163,3 +164,7 @@ func is_shoot_pressed() -> bool:
 
 func is_jump_just_pressed() -> bool:
 	return _jump_just_pressed
+
+
+func is_jump_held() -> bool:
+	return jump_timer > JUMP_INTERVAL - JUMP_HOLD_TIME

@@ -1,7 +1,7 @@
 class_name RecoilDecorator
 extends ShooterDecorator
 
-var knockback_strength: float = 3.0
+var knockback_strength: float = 7.0
 
 
 func shoot(context: ShootingContext) -> Array[Bullet]:
