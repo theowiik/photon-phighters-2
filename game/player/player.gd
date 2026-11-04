@@ -1,6 +1,9 @@
 class_name Player
 extends CharacterBody3D
 
+signal damaged
+signal knocked_out
+
 const MAX_HEALTH: float = 100.0
 const RESPAWN_DELAY: float = 1.5
 const SPAWN_PROTECTION: float = 1.0
@@ -129,6 +132,7 @@ func take_damage(amount: float) -> void:
 		return
 
 	hurt_player.play()
+	damaged.emit()
 	health = maxf(health - amount, 0.0)
 	_update_health_label()
 	if health == 0.0:
@@ -140,6 +144,7 @@ func knock_out() -> void:
 		return
 
 	is_knocked_out = true
+	knocked_out.emit()
 	visible = false
 	collision_shape.set_deferred("disabled", true)
 	set_deferred("global_position", spawn_position)
