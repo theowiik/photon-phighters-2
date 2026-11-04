@@ -99,9 +99,15 @@ every pull request.
 
 ## Architecture
 
-- `main/main.gd` is a small state machine (`PLAYING`, `ROUND_END`, `PICKING`). It starts
-  rounds through `RoundManager`, shows the crystal picker to the round loser and applies
-  the picked crystal.
+- `main/main.gd` is a small state machine (`TITLE`, `COUNTDOWN`, `PLAYING`,
+  `ROUND_OVER`, `PICKING`, `MATCH_OVER`). It pauses the tree outside `TITLE` and
+  `PLAYING`, starts rounds through `RoundManager`, shows the crystal picker to the round
+  loser and applies the picked crystal. The title screen runs a bot match.
+- `main/follow_camera.gd` zooms to fit both players and shakes on hits and knockouts.
+  `main/sky.gdshader` and `main/post_process.gdshader` give the scene its look.
+- UI uses the project theme in `hud/ui_theme.tres`; style labels with its type
+  variations (`Banner`, `Score`, `Clock`, `Heading`, `Subtle`) instead of per-node
+  overrides.
 - `main/round_manager.gd` owns the round timer and scores. Scores are counted per team
   color hex from the bulbs in the `bulbs` group.
 - `player/player.gd` wires together input, movement, shooting, animation and team color.

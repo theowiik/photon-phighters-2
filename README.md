@@ -25,11 +25,12 @@ loser chooses one of three new crystals between rounds. A draw replays the round
 awarding a win. Damage knocks players out briefly, then they respawn with a short
 shield.
 
-- P1: A/D to move, Space to jump, mouse to aim, left click to shoot.
+- P1: A/D to move, W or Space to jump, mouse to aim, left click to shoot.
 - P2: connect a gamepad before starting the match; left stick to move, A to jump, right
   stick to aim, RT to shoot. Without a gamepad, P2 is a bot.
-- Enter or gamepad A starts a match or plays again. Crystal choices use the losing
-  player's controls (mouse/arrow keys and Enter, or gamepad D-pad/left stick and A).
+- Enter, a click or gamepad A starts a match or plays again. Crystal choices use the
+  losing player's controls (mouse/arrow keys and Enter, or gamepad D-pad/left stick and
+  A).
 - F1 toggles the developer console.
 
 Run `mise run test` for the automated match-loop smoke test.
