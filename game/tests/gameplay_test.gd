@@ -15,12 +15,12 @@ func _run() -> void:
 	get_tree().root.add_child(game)
 	get_tree().current_scene = game
 	_expect(game.state == Main.GameState.TITLE)
-	_expect(get_tree().paused)
+	_expect(not get_tree().paused)
+	_expect(game.players[0].is_bot() and game.players[1].is_bot())
 	_expect(game.players[0].team.color != game.players[1].team.color)
-	var initial_position := game.players[0].global_position
-	await get_tree().create_timer(0.1).timeout
-	_expect(game.players[0].global_position == initial_position)
 	_press_enter()
+	_expect(not game.players[0].is_bot())
+	_expect(get_tree().paused)
 	_expect(game.state == Main.GameState.COUNTDOWN)
 	_press_enter()
 	_expect(game.round_number == 1)

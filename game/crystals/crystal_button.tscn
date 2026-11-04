@@ -1,6 +1,4 @@
 [gd_scene format=3 uid="uid://c43ctoschg12q"]
 
 [node name="CrystalButton" type="Button"]
-offset_right = 219.0
-offset_bottom = 55.0
-text = "hello"
+alignment = 0

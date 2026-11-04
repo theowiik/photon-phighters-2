@@ -29,6 +29,7 @@ script = ExtResource("1_tefeu")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 1.5, 0)
 
 [node name="Camera3D" type="Camera3D" parent="."]
+process_mode = 3
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.650961, 13.587667, 30.053001)
 fov = 22.5
 size = 10.69

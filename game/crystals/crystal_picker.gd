@@ -9,29 +9,20 @@ var has_picked: bool = false
 var selected_index: int = 0
 var stick_direction: int = 0
 
-@onready var result_label: RichTextLabel = $Center/Panel/Content/ResultLabel
-@onready var buttons: VBoxContainer = $Center/Panel/Content/Buttons
-@onready var hint: Label = $Center/Panel/Content/Hint
+@onready var title: Label = $Center/Content/Title
+@onready var buttons: VBoxContainer = $Center/Content/Buttons
+@onready var hint: Label = $Center/Content/Hint
 
 
-func show_choices(winner: Player, loser: Player, choices: Array[String]) -> void:
+func show_choices(_winner: Player, loser: Player, choices: Array[String]) -> void:
 	picking_player = loser
-	result_label.text = (
-		"[color=#%s]%s[/color] won the round.\n[color=#%s]%s · %s[/color] picks an upgrade."
-		% [
-			winner.team.get_hex(),
-			winner.team.name,
-			loser.team.get_hex(),
-			loser.display_name,
-			loser.team.name
-		]
-	)
+	title.text = "%s PICKS A CRYSTAL" % loser.display_name
+	title.add_theme_color_override("font_color", loser.team.color)
 	for crystal_name in choices:
 		var button: Button = crystal_button_scene.instantiate()
 		button.text = (
 			"%s\n%s" % [crystal_name.capitalize(), CrystalRegistry.get_description(crystal_name)]
 		)
-		button.custom_minimum_size.y = 72
 		button.disabled = loser.is_bot()
 		buttons.add_child(button)
 		button.pressed.connect(_on_crystal_button_pressed.bind(crystal_name))
@@ -46,15 +37,15 @@ func show_choices(winner: Player, loser: Player, choices: Array[String]) -> void
 		button.focus_next = button.get_path_to(next)
 
 	if loser.is_bot():
-		hint.text = "The bot is choosing…"
-		await get_tree().create_timer(2.5).timeout
+		hint.text = "Bot is choosing"
+		await get_tree().create_timer(1.5).timeout
 		_on_crystal_button_pressed(choices.pick_random())
 	else:
 		buttons.get_child(0).grab_focus()
 		if loser.input is GamepadInput:
-			hint.text = "Use your left stick or D-pad · A to choose"
+			hint.text = "D-pad to move · A to pick"
 		else:
-			hint.text = "Click a crystal or use ↑ / ↓ · Enter to choose"
+			hint.text = "Click, or ↑ ↓ and Enter"
 
 
 func _input(event: InputEvent) -> void:

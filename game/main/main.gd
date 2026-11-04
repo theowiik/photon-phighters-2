@@ -3,8 +3,9 @@ extends Node3D
 
 enum GameState { TITLE, COUNTDOWN, PLAYING, ROUND_OVER, PICKING, MATCH_OVER }
 
-const COUNTDOWN_SECONDS: int = 3
-const ROUND_OVER_SECONDS: float = 2.5
+const INTRO_SECONDS: float = 1.1
+const GO_SECONDS: float = 0.5
+const ROUND_OVER_SECONDS: float = 2.0
 const CRYSTAL_CHOICES: int = 3
 
 static var has_shown_title: bool = false
@@ -54,31 +55,25 @@ func _assign_inputs() -> void:
 
 func _set_state(new_state: GameState) -> void:
 	state = new_state
-	get_tree().paused = state != GameState.PLAYING
+	get_tree().paused = state not in [GameState.TITLE, GameState.PLAYING]
 
 
 func _show_title() -> void:
 	_set_state(GameState.TITLE)
+	for player in players:
+		player.input = NaiveBotInput.new(player)
 	round_manager.reset()
-	hud.show_message("PHOTON PHIGHTERS", _title_text(), Color.WHITE, true)
+	hud.show_title(_controls_text())
 
 
-func _title_text() -> String:
+func _controls_text() -> String:
 	var player_two := "Left stick move · A jump · Right stick aim · RT shoot"
-	if players[1].is_bot():
-		player_two = "Bot (connect a gamepad before starting to play against a friend)"
-
-	var lines: Array[String] = [
-		"Paint the arena with light. Every bulb in your color is a point.",
-		"Most bulbs when time runs out wins the round. First to %d wins." % Constants.ROUNDS_TO_WIN,
-		"The round loser picks a crystal to power up.",
-		"",
-		"P1  A/D move · Space jump · Mouse aim · Left click shoot",
-		"P2  " + player_two,
-		"",
-		"Press Enter or A to start",
-	]
-	return "\n".join(lines)
+	if Input.get_connected_joypads().is_empty():
+		player_two = "Bot · connect a gamepad to play against a friend"
+	return (
+		"P1  A/D move · Space jump · Mouse aim · Click shoot\nP2  %s\nFirst to %d rounds"
+		% [player_two, Constants.ROUNDS_TO_WIN]
+	)
 
 
 func _on_start_requested() -> void:
@@ -97,13 +92,12 @@ func _start_round() -> void:
 	for player in players:
 		player.respawn()
 
-	hud.update_round(round_number)
 	_set_state(GameState.COUNTDOWN)
-	for seconds_left in range(COUNTDOWN_SECONDS, 0, -1):
-		hud.show_message(str(seconds_left), "Round %d" % round_number)
-		await get_tree().create_timer(1.0).timeout
+	hud.show_scoreboard()
+	hud.show_banner("ROUND %d" % round_number)
+	await get_tree().create_timer(INTRO_SECONDS).timeout
 
-	hud.flash_message("GO!")
+	hud.flash_banner("GO!", GO_SECONDS)
 	_set_state(GameState.PLAYING)
 	round_manager.start()
 
@@ -112,14 +106,16 @@ func _on_round_finished(winner: Player, loser: Player) -> void:
 	_set_state(GameState.ROUND_OVER)
 
 	if winner == null:
-		hud.show_message("Draw!", _bulb_score_line())
+		hud.show_banner("DRAW", _bulb_score_line())
 		await get_tree().create_timer(ROUND_OVER_SECONDS).timeout
 		_start_round()
 		return
 
 	round_wins[winner] += 1
 	hud.update_round_wins(round_wins)
-	hud.show_message("%s wins the round!" % winner.team.name, _bulb_score_line(), winner.team.color)
+	hud.show_banner(
+		"%s TAKES THE ROUND" % winner.team.name.to_upper(), _bulb_score_line(), winner.team.color
+	)
 	await get_tree().create_timer(ROUND_OVER_SECONDS).timeout
 
 	if round_wins[winner] >= Constants.ROUNDS_TO_WIN:
@@ -140,7 +136,7 @@ func _versus_line(left: int, right: int) -> String:
 
 func _offer_crystals(winner: Player, loser: Player) -> void:
 	_set_state(GameState.PICKING)
-	hud.hide_message()
+	hud.hide_banner()
 
 	var picker: CrystalPicker = crystal_picker_scene.instantiate()
 	add_child(picker)
@@ -151,6 +147,7 @@ func _offer_crystals(winner: Player, loser: Player) -> void:
 
 func _on_crystal_picked(crystal_name: String, loser: Player, picker: CrystalPicker) -> void:
 	loser.apply_crystal(crystal_name)
+	hud.update_loadouts()
 	hud.add_log("%s picked %s" % [loser.display_name, crystal_name.capitalize()])
 	picker.queue_free()
 	_start_round()
@@ -159,12 +156,8 @@ func _on_crystal_picked(crystal_name: String, loser: Player, picker: CrystalPick
 func _end_match(winner: Player) -> void:
 	_set_state(GameState.MATCH_OVER)
 	var final_score := _versus_line(round_wins[players[0]], round_wins[players[1]])
-	hud.show_message(
-		"%s wins the match!" % winner.team.name,
-		final_score + "\n\nPress Enter or A to play again",
-		winner.team.color,
-		true
-	)
+	hud.show_banner("%s WINS" % winner.team.name.to_upper(), final_score, winner.team.color, true)
+	hud.wait_for_start("Press Enter or A to play again")
 
 
 func _on_ob_body_entered(body: Node3D) -> void:

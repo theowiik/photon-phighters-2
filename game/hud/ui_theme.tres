@@ -1,0 +1,96 @@
+[gd_resource type="Theme" format=3]
+
+[ext_resource type="FontFile" path="res://assets/fonts/cascadia_mono.ttf" id="1_bkdx0"]
+
+[sub_resource type="FontVariation" id="FontVariation_shl6n"]
+base_font = ExtResource("1_bkdx0")
+variation_opentype = {
+2003265652: 700
+}
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_umefo"]
+content_margin_left = 20.0
+content_margin_top = 12.0
+content_margin_right = 20.0
+content_margin_bottom = 12.0
+bg_color = Color(1, 1, 1, 0.04)
+border_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_o70cg"]
+content_margin_left = 20.0
+content_margin_top = 12.0
+content_margin_right = 20.0
+content_margin_bottom = 12.0
+bg_color = Color(1, 1, 1, 0.1)
+border_width_left = 4
+border_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_swfy4"]
+content_margin_left = 20.0
+content_margin_top = 12.0
+content_margin_right = 20.0
+content_margin_bottom = 12.0
+bg_color = Color(1, 1, 1, 0.1)
+border_width_left = 4
+border_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qby0p"]
+content_margin_left = 20.0
+content_margin_top = 12.0
+content_margin_right = 20.0
+content_margin_bottom = 12.0
+bg_color = Color(1, 1, 1, 0.04)
+border_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bk3h3"]
+content_margin_left = 20.0
+content_margin_top = 12.0
+content_margin_right = 20.0
+content_margin_bottom = 12.0
+bg_color = Color(1, 1, 1, 0.16)
+border_width_left = 4
+border_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ubtmd"]
+content_margin_left = 16.0
+content_margin_top = 16.0
+content_margin_right = 16.0
+content_margin_bottom = 16.0
+bg_color = Color(0, 0, 0, 0.8)
+
+[resource]
+default_font = ExtResource("1_bkdx0")
+default_font_size = 20
+Banner/base_type = &"Label"
+Banner/constants/outline_size = 16
+Banner/font_sizes/font_size = 88
+Banner/fonts/font = SubResource("FontVariation_shl6n")
+Button/colors/font_color = Color(1, 1, 1, 0.85)
+Button/colors/font_disabled_color = Color(1, 1, 1, 0.5)
+Button/colors/font_focus_color = Color(1, 1, 1, 1)
+Button/colors/font_hover_color = Color(1, 1, 1, 1)
+Button/constants/align_to_largest_stylebox = 0
+Button/styles/disabled = SubResource("StyleBoxFlat_umefo")
+Button/styles/focus = SubResource("StyleBoxFlat_o70cg")
+Button/styles/hover = SubResource("StyleBoxFlat_swfy4")
+Button/styles/normal = SubResource("StyleBoxFlat_qby0p")
+Button/styles/pressed = SubResource("StyleBoxFlat_bk3h3")
+Clock/base_type = &"Label"
+Clock/constants/outline_size = 10
+Clock/font_sizes/font_size = 32
+Clock/fonts/font = SubResource("FontVariation_shl6n")
+Heading/base_type = &"Label"
+Heading/constants/outline_size = 10
+Heading/font_sizes/font_size = 32
+Heading/fonts/font = SubResource("FontVariation_shl6n")
+Label/colors/font_color = Color(1, 1, 1, 0.95)
+Label/colors/font_outline_color = Color(0, 0, 0, 0.75)
+Label/constants/outline_size = 6
+PanelContainer/styles/panel = SubResource("StyleBoxFlat_ubtmd")
+Score/base_type = &"Label"
+Score/constants/outline_size = 12
+Score/font_sizes/font_size = 56
+Score/fonts/font = SubResource("FontVariation_shl6n")
+Subtle/base_type = &"Label"
+Subtle/colors/font_color = Color(1, 1, 1, 0.6)
+Subtle/font_sizes/font_size = 17
