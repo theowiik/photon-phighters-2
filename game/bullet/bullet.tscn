@@ -3,9 +3,9 @@
 [ext_resource type="Texture2D" uid="uid://co5yey2y7yboh" path="res://assets/icon.svg" id="1_1hbe6"]
 [ext_resource type="Script" uid="uid://d00uqlh5tao8s" path="res://bullet/bullet.gd" id="1_script"]
 
-[sub_resource type="SphereMesh" id="SphereMesh_3ndsa"]
-radius = 0.1
-height = 0.2
+[sub_resource type="CapsuleMesh" id="SphereMesh_3ndsa"]
+radius = 0.06
+height = 0.5
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_3ndsa"]
 radius = 0.10501297
@@ -27,6 +27,8 @@ mesh = SubResource("SphereMesh_3ndsa")
 shape = SubResource("SphereShape3D_3ndsa")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
+light_energy = 1.5
+omni_range = 3.0
 
 [node name="LifeTimer" type="Timer" parent="."]
 wait_time = 5.0

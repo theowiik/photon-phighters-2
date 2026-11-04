@@ -8,6 +8,9 @@ const MAX_HEALTH: float = 100.0
 const RESPAWN_DELAY: float = 1.5
 const SPAWN_PROTECTION: float = 1.0
 const HEALTH_BAR_SEGMENTS: int = 10
+const BODY_GLOW: float = 0.2
+const HIT_FLASH_SECONDS: float = 0.12
+const PROTECTION_BLINK_SECONDS: float = 0.08
 
 @export var display_name: String = "P1"
 
@@ -31,6 +34,7 @@ var base_shooter: ShooterInterface
 var shooter_decorator_names: Array[String] = []
 var shoot_cooldown: float = 0.0
 var animation_manager: AnimationManager
+var _body_materials: Array[BaseMaterial3D] = []
 
 @onready var aim_pivot: Node3D = $AimPivot
 @onready var collision_shape: CollisionShape3D = $CollisionShape3D
@@ -70,7 +74,10 @@ func _physics_process(delta: float) -> void:
 
 	if protection_remaining > 0.0:
 		protection_remaining = maxf(protection_remaining - delta, 0.0)
-		_update_health_label()
+		body.visible = (
+			protection_remaining == 0.0
+			or fmod(protection_remaining, PROTECTION_BLINK_SECONDS * 2.0) > PROTECTION_BLINK_SECONDS
+		)
 	input.update()
 	_process_shooting(delta)
 	_process_movement(delta)
@@ -92,6 +99,8 @@ func _process_shooting(delta: float) -> void:
 
 		shooter.shoot(context)
 		shoot_cooldown = shooter.get_shoot_delay()
+		flashlight.kick(direction)
+		shoot_player.pitch_scale = randf_range(0.9, 1.15)
 		shoot_player.play()
 
 
@@ -133,6 +142,7 @@ func take_damage(amount: float) -> void:
 
 	hurt_player.play()
 	damaged.emit()
+	_flash()
 	health = maxf(health - amount, 0.0)
 	_update_health_label()
 	if health == 0.0:
@@ -170,9 +180,17 @@ func respawn() -> void:
 
 func _update_health_label() -> void:
 	var filled := ceili(health / MAX_HEALTH * HEALTH_BAR_SEGMENTS)
-	var bar := "█".repeat(filled) + "░".repeat(HEALTH_BAR_SEGMENTS - filled)
-	var shield := " SHIELD" if protection_remaining > 0.0 else ""
-	health_label.text = "%s %s%s" % [display_name, bar, shield]
+	health_label.text = "█".repeat(filled) + "░".repeat(HEALTH_BAR_SEGMENTS - filled)
+	health_label.visible = health < MAX_HEALTH
+
+
+func _flash() -> void:
+	var tween := create_tween().set_parallel()
+	for material in _body_materials:
+		material.emission = Color.WHITE
+		material.emission_energy_multiplier = 3.0
+		tween.tween_property(material, "emission", team.color, HIT_FLASH_SECONDS)
+		tween.tween_property(material, "emission_energy_multiplier", BODY_GLOW, HIT_FLASH_SECONDS)
 
 
 func apply_crystal(crystal_name: String) -> bool:
@@ -207,6 +225,7 @@ func set_team(new_team: Team) -> void:
 
 
 func _apply_team_color() -> void:
+	_body_materials.clear()
 	for child in body.get_children():
 		for mesh_instance in child.get_children():
 			if mesh_instance is MeshInstance3D:
@@ -214,7 +233,13 @@ func _apply_team_color() -> void:
 				if material:
 					material = material.duplicate()
 					material.albedo_color = team.color
+					material.emission_enabled = true
+					material.emission = team.color
+					material.emission_energy_multiplier = BODY_GLOW
+					material.rim_enabled = true
+					material.rim_tint = 0.3
 					mesh_instance.set_surface_override_material(0, material)
+					_body_materials.append(material)
 
 	flashlight.set_color(team.color)
 	health_label.modulate = team.color

@@ -4,6 +4,7 @@ extends Area3D
 const BULB_SCENE: PackedScene = preload("res://bulb/bulb.tscn")
 const BULB_MERGE_RADIUS: float = 0.75
 const WOBBLE_FREQUENCY: float = 12.0
+const HIT_KNOCKBACK: float = 4.5
 
 var team: Team = Team.white()
 var velocity: Vector3 = Vector3.ZERO
@@ -24,7 +25,7 @@ var _hit: bool = false
 func _ready():
 	_material = StandardMaterial3D.new()
 	_material.emission_enabled = true
-	_material.emission_energy_multiplier = 2.0
+	_material.emission_energy_multiplier = 6.0
 	mesh_instance.material_override = _material
 
 	_ray_query.collision_mask = collision_mask
@@ -41,6 +42,7 @@ func _physics_process(delta: float) -> void:
 	_age += delta
 	velocity.y -= _gravity * delta
 	var movement: Vector3 = velocity * speed * delta + _wobble_offset(delta)
+	_align_to(movement)
 
 	_ray_query.from = global_position
 	_ray_query.to = global_position + movement
@@ -53,6 +55,11 @@ func _physics_process(delta: float) -> void:
 		_handle_hit(result.collider)
 	else:
 		position += movement
+
+
+func _align_to(direction: Vector3) -> void:
+	var forward := direction.normalized()
+	mesh_instance.basis = Basis(forward.cross(Vector3.BACK), forward, Vector3.BACK)
 
 
 func _wobble_offset(delta: float) -> Vector3:
@@ -81,6 +88,7 @@ func _handle_hit(body: Node3D) -> void:
 
 	if body is Player:
 		body.take_damage(damage)
+		body.apply_impulse(velocity.normalized() * HIT_KNOCKBACK)
 	else:
 		_paint()
 
