@@ -4,7 +4,7 @@ extends MoverInterface
 var wrapped_mover: MoverInterface
 
 
-func _init(mover: MoverInterface):
+func _init(mover: MoverInterface) -> void:
 	wrapped_mover = mover
 
 

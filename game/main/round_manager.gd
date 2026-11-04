@@ -3,11 +3,12 @@ extends Node3D
 
 signal round_finished(winner: Player, loser: Player)
 signal time_updated(time_remaining: float)
-signal scores_updated(scores: Dictionary)
+signal scores_updated(scores: Dictionary[Team, int])
 
+var players: Array[Player] = []
 var time_remaining: float = 0.0
 var is_active: bool = false
-var scores: Dictionary = {}
+var scores: Dictionary[Team, int] = {}
 
 
 func _ready() -> void:
@@ -41,7 +42,7 @@ func start() -> void:
 
 
 func get_score(team: Team) -> int:
-	return scores.get(team.get_hex(), 0)
+	return scores.get(team, 0)
 
 
 func _clear_group(group: String) -> void:
@@ -71,18 +72,19 @@ func recalculate_scores() -> void:
 	scores.clear()
 
 	for bulb in get_tree().get_nodes_in_group(Constants.BULBS_GROUP):
-		var team_hex: String = bulb.get_team().get_hex()
-		scores[team_hex] = scores.get(team_hex, 0) + 1
+		scores[bulb.team] = scores.get(bulb.team, 0) + 1
 
 	scores_updated.emit(scores)
 
 
 func _finish_round() -> void:
-	var players := Groups.get_all_players()
-	players.sort_custom(func(a: Player, b: Player): return get_score(a.team) > get_score(b.team))
+	var ranked: Array[Player] = players.duplicate()
+	ranked.sort_custom(
+		func(a: Player, b: Player) -> bool: return get_score(a.team) > get_score(b.team)
+	)
 
-	if get_score(players[0].team) == get_score(players[1].team):
+	if get_score(ranked[0].team) == get_score(ranked[1].team):
 		round_finished.emit(null, null)
 		return
 
-	round_finished.emit(players[0], players[-1])
+	round_finished.emit(ranked[0], ranked[-1])

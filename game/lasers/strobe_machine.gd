@@ -11,12 +11,11 @@ func _process(_delta: float) -> void:
 	if not on:
 		return
 
-	var time = Time.get_ticks_msec() / 1000.0
+	var time := Time.get_ticks_msec() / 1000.0
 	light.visible = sin(time * strobe_speed * TAU) > 0.0
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventKey:
-		if event.pressed and event.keycode == KEY_J:
-			on = !on
-			visible = on
+	if event is InputEventKey and event.pressed and event.keycode == KEY_J:
+		on = not on
+		visible = on

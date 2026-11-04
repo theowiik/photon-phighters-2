@@ -1,14 +1,10 @@
 class_name RecoilDecorator
 extends ShooterDecorator
 
-var knockback_strength: float = 7.0
+const KNOCKBACK: float = 7.0
 
 
 func shoot(context: ShootingContext) -> Array[Bullet]:
-	var bullets = wrapped_shooter.shoot(context)
-
-	if context.player:
-		var knockback_direction = -context.direction
-		context.player.apply_impulse(knockback_direction.normalized() * knockback_strength)
-
+	var bullets := wrapped_shooter.shoot(context)
+	context.player.apply_impulse(-context.direction.normalized() * KNOCKBACK)
 	return bullets

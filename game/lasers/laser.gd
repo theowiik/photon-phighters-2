@@ -1,3 +1,4 @@
+class_name Laser
 extends Node3D
 
 var mesh: ImmediateMesh
@@ -29,7 +30,7 @@ func set_color(new_color: Color) -> void:
 		material.albedo_color = color
 
 
-func _physics_process(_delta):
+func _physics_process(_delta: float) -> void:
 	mesh.clear_surfaces()
 	mesh.surface_begin(Mesh.PRIMITIVE_LINES)
 	mesh.surface_add_vertex(Vector3.ZERO)

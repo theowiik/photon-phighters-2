@@ -34,10 +34,6 @@ func set_team(new_team: Team) -> void:
 	_color_initialized = true
 
 
-func get_team() -> Team:
-	return team
-
-
 func _apply_team(new_team: Team) -> void:
 	team = new_team
 	light.light_color = team.color
@@ -48,7 +44,7 @@ func _apply_team(new_team: Team) -> void:
 
 
 func claim(new_team: Team) -> void:
-	if team.color == new_team.color:
+	if team == new_team:
 		return
 
 	_apply_team(new_team)

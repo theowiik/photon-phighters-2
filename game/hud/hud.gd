@@ -30,13 +30,13 @@ var _prompt_tween: Tween
 
 
 func _ready() -> void:
-	console = Console.new(console_output, get_tree())
+	console = Console.new(console_output)
 
 
 func setup(match_players: Array[Player], round_wins: Dictionary) -> void:
 	players = match_players
 	for i in players.size():
-		for label in [score_labels[i], win_labels[i], loadout_labels[i]]:
+		for label: Label in [score_labels[i], win_labels[i], loadout_labels[i]]:
 			label.add_theme_color_override("font_color", players[i].team.color)
 	update_scores({})
 	update_round_wins(round_wins)
@@ -71,9 +71,9 @@ func _is_start_event(event: InputEvent) -> bool:
 	return false
 
 
-func update_scores(scores: Dictionary) -> void:
+func update_scores(scores: Dictionary[Team, int]) -> void:
 	for i in players.size():
-		score_labels[i].text = str(scores.get(players[i].team.get_hex(), 0))
+		score_labels[i].text = str(scores.get(players[i].team, 0))
 
 
 func update_round_wins(round_wins: Dictionary) -> void:

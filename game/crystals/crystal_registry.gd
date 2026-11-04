@@ -1,20 +1,7 @@
 class_name CrystalRegistry
 extends RefCounted
 
-static var movement_crystals = {
-	"phast": PhastDecorator,
-	"double_jump": DoubleJumpDecorator,
-}
-
-static var shooting_crystals = {
-	"rapid_fire": RapidFireDecorator,
-	"triple_shot": TripleShotDecorator,
-	"fast_bullets": FastBulletsDecorator,
-	"recoil": RecoilDecorator,
-	"wobbly": WobblyBulletsDecorator,
-}
-
-static var descriptions: Dictionary[String, String] = {
+const DESCRIPTIONS: Dictionary[String, String] = {
 	"phast": "Run 60% faster",
 	"double_jump": "Jump again in mid-air",
 	"rapid_fire": "Shoot twice as often",
@@ -22,6 +9,19 @@ static var descriptions: Dictionary[String, String] = {
 	"fast_bullets": "Bullets fly twice as fast",
 	"recoil": "Shots knock you backwards",
 	"wobbly": "Bullets weave as they fly",
+}
+
+static var movement_crystals: Dictionary[String, GDScript] = {
+	"phast": PhastDecorator,
+	"double_jump": DoubleJumpDecorator,
+}
+
+static var shooting_crystals: Dictionary[String, GDScript] = {
+	"rapid_fire": RapidFireDecorator,
+	"triple_shot": TripleShotDecorator,
+	"fast_bullets": FastBulletsDecorator,
+	"recoil": RecoilDecorator,
+	"wobbly": WobblyBulletsDecorator,
 }
 
 
@@ -41,7 +41,7 @@ static func random_choices(count: int, owned: Array[String]) -> Array[String]:
 
 
 static func get_description(crystal_name: String) -> String:
-	return descriptions[crystal_name]
+	return DESCRIPTIONS[crystal_name]
 
 
 static func is_movement_crystal(crystal_name: String) -> bool:
@@ -53,15 +53,10 @@ static func is_shooting_crystal(crystal_name: String) -> bool:
 
 
 static func create_movement_decorator(crystal_name: String, base: MoverInterface) -> MoverInterface:
-	if not movement_crystals.has(crystal_name):
-		return null
 	return movement_crystals[crystal_name].new(base)
 
 
 static func create_shooting_decorator(
 	crystal_name: String, base: ShooterInterface
 ) -> ShooterInterface:
-	if not shooting_crystals.has(crystal_name):
-		return null
-
 	return shooting_crystals[crystal_name].new(base)

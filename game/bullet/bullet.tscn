@@ -31,7 +31,7 @@ light_energy = 1.5
 omni_range = 3.0
 
 [node name="LifeTimer" type="Timer" parent="."]
-wait_time = 5.0
+wait_time = 3.0
 one_shot = true
 autostart = true
 

@@ -84,7 +84,7 @@ func _test_gamepad_picker() -> void:
 	var choices := CrystalRegistry.random_choices(3, owned)
 	_expect(choices.size() == 3)
 	_expect(not choices.has("double_jump") and not choices.has("rapid_fire"))
-	picker.show_choices(game.players[1], player, choices)
+	picker.show_choices(player, choices)
 	_press_enter()
 	_press_gamepad(0, JOY_BUTTON_A)
 	_expect(selected.is_empty())

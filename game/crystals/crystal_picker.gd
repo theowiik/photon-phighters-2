@@ -14,7 +14,7 @@ var stick_direction: int = 0
 @onready var hint: Label = $Center/Content/Hint
 
 
-func show_choices(_winner: Player, loser: Player, choices: Array[String]) -> void:
+func show_choices(loser: Player, choices: Array[String]) -> void:
 	picking_player = loser
 	title.text = "%s PICKS A CRYSTAL" % loser.display_name
 	title.add_theme_color_override("font_color", loser.team.color)
@@ -63,7 +63,7 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouse:
 		return
 	if event is InputEventKey:
-		for action in ["ui_up", "ui_down", "ui_accept", "ui_focus_next", "ui_focus_prev"]:
+		for action: String in ["ui_up", "ui_down", "ui_accept", "ui_focus_next", "ui_focus_prev"]:
 			if event.is_action(action):
 				return
 	get_viewport().set_input_as_handled()

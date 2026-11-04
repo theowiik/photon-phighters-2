@@ -1,6 +1,6 @@
 [gd_scene load_steps=26 format=3 uid="uid://wilclsh64myp"]
 
-[ext_resource type="Texture2D" uid="uid://co5yey2y7yboh" path="res://assets/icon.svg" id="1_eqqp1"]
+[ext_resource type="Script" uid="uid://xbop3wbqynax" path="res://player/player_body.gd" id="1_body"]
 [ext_resource type="Script" uid="uid://cphs6p6g4lci0" path="res://player/player.gd" id="2_ykyjo"]
 [ext_resource type="PackedScene" uid="uid://d3q8721w4j0h5" path="res://assets/player/body.fbx" id="3_nmc1l"]
 [ext_resource type="PackedScene" uid="uid://cslt4jk1qkwb2" path="res://assets/player/head.fbx" id="5_3rerk"]
@@ -1475,12 +1475,9 @@ script = ExtResource("2_ykyjo")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.54168046, 0)
 shape = SubResource("CapsuleShape3D_ykyjo")
 
-[node name="Sprite3D" type="Sprite3D" parent="."]
-visible = false
-texture = ExtResource("1_eqqp1")
-
 [node name="Body" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5293977, 0)
+script = ExtResource("1_body")
 
 [node name="Torso" parent="Body" instance=ExtResource("3_nmc1l")]
 transform = Transform3D(0.20044534, 0, 0.9797049, 0, 1.0000001, 0, -0.9797049, 0, 0.20044534, 0, -0.7441906, 0)

@@ -41,19 +41,16 @@ func _compute_movement() -> Vector2:
 	var delta: float = player_node.get_physics_process_delta_time()
 	wander_timer -= delta
 
-	# Randomly start wandering
 	if wander_timer <= 0 and randf() < WANDER_CHANCE:
 		wander_timer = WANDER_DURATION
 		wander_direction = Vector2.LEFT if randf() < 0.5 else Vector2.RIGHT
 
-	# If wandering, go that direction
 	if wander_timer > 0:
 		return wander_direction
 
 	if not is_instance_valid(current_target):
 		return wander_direction
 
-	# Otherwise chase target
 	var distance_x: float = current_target.global_position.x - player_node.global_position.x
 	if absf(distance_x) > 2.0:
 		return Vector2(signf(distance_x), 0.0)
@@ -77,10 +74,8 @@ func _update_jump() -> void:
 
 
 func _update_camera() -> void:
-	if camera == null or not is_instance_valid(camera):
-		var viewport = player_node.get_viewport()
-		if viewport:
-			camera = viewport.get_camera_3d()
+	if not is_instance_valid(camera):
+		camera = player_node.get_viewport().get_camera_3d()
 
 
 func _compute_aim_direction() -> Vector2:
@@ -100,7 +95,7 @@ func _compute_aim_direction() -> Vector2:
 
 func _update_target() -> void:
 	retarget_timer -= player_node.get_physics_process_delta_time()
-	if retarget_timer > 0 and current_target != null and is_instance_valid(current_target):
+	if retarget_timer > 0 and is_instance_valid(current_target):
 		return
 
 	retarget_timer = RETARGET_INTERVAL
@@ -113,7 +108,7 @@ func _find_enemy_bulb() -> Bulb:
 	var closest: Bulb = null
 	var closest_distance: float = TARGET_RANGE
 	for bulb in Groups.get_all_bulbs():
-		if bulb.team.color == player_node.team.color:
+		if bulb.team == player_node.team:
 			continue
 		var distance: float = player_node.global_position.distance_to(bulb.global_position)
 		if distance < closest_distance:
@@ -123,15 +118,10 @@ func _find_enemy_bulb() -> Bulb:
 
 
 func _find_closest_enemy() -> Player:
-	var players: Array[Player] = Groups.get_all_players()
 	var closest: Player = null
 	var closest_distance: float = INF
-	var my_team: Team = player_node.team
-
-	for player in players:
-		if player == player_node or player.is_knocked_out:
-			continue
-		if player.team.color == my_team.color:
+	for player in Groups.get_all_players():
+		if player.team == player_node.team or player.is_knocked_out:
 			continue
 
 		var distance: float = player_node.global_position.distance_to(player.global_position)
@@ -148,14 +138,6 @@ func get_movement() -> Vector2:
 
 func get_aim_direction() -> Vector2:
 	return _aim_direction
-
-
-func is_aiming() -> bool:
-	return _aim_direction != Vector2.ZERO
-
-
-func is_shoot_just_pressed() -> bool:
-	return false
 
 
 func is_shoot_pressed() -> bool:

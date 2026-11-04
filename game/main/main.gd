@@ -26,6 +26,7 @@ func _ready() -> void:
 	for player in players:
 		round_wins[player] = 0
 
+	round_manager.players = players
 	round_manager.time_updated.connect(hud.update_time)
 	round_manager.scores_updated.connect(hud.update_scores)
 	round_manager.round_finished.connect(_on_round_finished)
@@ -46,7 +47,7 @@ func _assign_teams() -> void:
 
 func _assign_inputs() -> void:
 	var gamepads := Input.get_connected_joypads()
-	players[0].input = KeyboardMouseInput.new(players[0])
+	players[0].input = KeyboardMouseInput.new(players[0].aim_pivot)
 	if gamepads.is_empty():
 		players[1].input = NaiveBotInput.new(players[1])
 	else:
@@ -121,7 +122,7 @@ func _on_round_finished(winner: Player, loser: Player) -> void:
 	if round_wins[winner] >= Constants.ROUNDS_TO_WIN:
 		_end_match(winner)
 	else:
-		_offer_crystals(winner, loser)
+		_offer_crystals(loser)
 
 
 func _bulb_score_line() -> String:
@@ -134,7 +135,7 @@ func _versus_line(left: int, right: int) -> String:
 	return "%s %d  –  %d %s" % [players[0].team.name, left, right, players[1].team.name]
 
 
-func _offer_crystals(winner: Player, loser: Player) -> void:
+func _offer_crystals(loser: Player) -> void:
 	_set_state(GameState.PICKING)
 	hud.hide_banner()
 
@@ -142,7 +143,7 @@ func _offer_crystals(winner: Player, loser: Player) -> void:
 	add_child(picker)
 	picker.crystal_picked.connect(_on_crystal_picked.bind(loser, picker))
 	var owned := loser.mover_decorator_names + loser.shooter_decorator_names
-	picker.show_choices(winner, loser, CrystalRegistry.random_choices(CRYSTAL_CHOICES, owned))
+	picker.show_choices(loser, CrystalRegistry.random_choices(CRYSTAL_CHOICES, owned))
 
 
 func _on_crystal_picked(crystal_name: String, loser: Player, picker: CrystalPicker) -> void:

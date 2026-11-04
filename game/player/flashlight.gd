@@ -25,9 +25,9 @@ func _ready() -> void:
 
 
 func set_color(color: Color) -> void:
-	var material = hand_mesh.get_active_material(0)
-	if material:
-		material = material.duplicate()
+	var source := hand_mesh.get_active_material(0) as BaseMaterial3D
+	if source:
+		var material := source.duplicate() as BaseMaterial3D
 		material.albedo_color = color
 		hand_mesh.set_surface_override_material(0, material)
 	spot_light.light_color = color
@@ -48,20 +48,12 @@ func _physics_process(delta: float) -> void:
 
 
 func _move_towards_target_position() -> void:
-	var target_pos = target_position.global_position
-	var current_pos = global_position
-	var displacement = target_pos - current_pos
-
-	var spring = displacement * SPRING_FORCE
-	var damp = linear_velocity * DAMPING
-	var force = spring - damp
-
-	apply_central_force(force)
+	var displacement := target_position.global_position - global_position
+	apply_central_force(displacement * SPRING_FORCE - linear_velocity * DAMPING)
 
 
 func _rotate_towards_target(delta: float) -> void:
-	var aim_direction = (target_position.global_position - aim_origin.global_position).normalized()
-
-	var up_vector = Vector3.DOWN if aim_direction.x < 0 else Vector3.UP
-	var target_basis = Basis.looking_at(aim_direction, up_vector)
+	var aim_direction := (target_position.global_position - aim_origin.global_position).normalized()
+	var up_vector := Vector3.DOWN if aim_direction.x < 0 else Vector3.UP
+	var target_basis := Basis.looking_at(aim_direction, up_vector)
 	global_transform.basis = global_transform.basis.slerp(target_basis, ROTATION_SPEED * delta)
