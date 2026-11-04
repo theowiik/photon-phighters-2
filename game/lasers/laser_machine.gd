@@ -26,6 +26,5 @@ func _process(_delta: float) -> void:
 		var angle = sin(time * WAVE_SPEED + phase) * WAVE_AMOUNT
 		lasers[i].rotation_degrees.x = angle
 
-		# Rainbow colors
-		var hue = fmod(time * 0.2 + float(i) / lasers.size(), 1.0)
-		lasers[i].set_color(Color.from_hsv(hue, 1.0, 1.0))
+		var hue = 0.62 + 0.12 * sin(time * 0.3 + phase)
+		lasers[i].set_color(Color.from_hsv(hue, 0.6, 1.0, 0.25))

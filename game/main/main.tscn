@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://ovaec6nc7m42"]
+[gd_scene load_steps=16 format=3 uid="uid://ovaec6nc7m42"]
 
 [ext_resource type="PackedScene" uid="uid://wilclsh64myp" path="res://player/player.tscn" id="1_o5qli"]
 [ext_resource type="Script" uid="uid://cbldusqpmy3gb" path="res://main/main.gd" id="1_tefeu"]
@@ -8,14 +8,34 @@
 [ext_resource type="PackedScene" uid="uid://bioo4dk8jqu1w" path="res://lasers/laser_machine.tscn" id="8_tipki"]
 [ext_resource type="PackedScene" uid="uid://ymkakny8f3x5" path="res://lasers/strobe_machine.tscn" id="9_85g3d"]
 [ext_resource type="PackedScene" uid="uid://chrmkwix0kv7c" path="res://assets/maps/tank_mayhem/tank_mayhem.glb" id="10_choun"]
+[ext_resource type="Shader" path="res://main/sky.gdshader" id="11_sky"]
+[ext_resource type="Shader" path="res://main/post_process.gdshader" id="12_post"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_sky"]
+shader = ExtResource("11_sky")
+
+[sub_resource type="Sky" id="Sky_main"]
+sky_material = SubResource("ShaderMaterial_sky")
 
 [sub_resource type="Environment" id="Environment_tbgi4"]
-background_mode = 1
+background_mode = 2
+sky = SubResource("Sky_main")
+ambient_light_source = 2
+ambient_light_color = Color(0.32, 0.36, 0.6, 1)
+ambient_light_energy = 0.35
+tonemap_mode = 3
 ssr_enabled = true
 ssao_enabled = true
-ssil_enabled = true
-sdfgi_enabled = true
 glow_enabled = true
+glow_intensity = 1.0
+glow_bloom = 0.08
+glow_hdr_threshold = 0.9
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.006
+volumetric_fog_albedo = Color(0.55, 0.6, 0.9, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_post"]
+shader = ExtResource("12_post")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_85g3d"]
 size = Vector3(137.51, 3.445, 18.475)
@@ -35,15 +55,22 @@ fov = 22.5
 size = 10.69
 script = ExtResource("2_0wfyh")
 
-[node name="SpotLight3D2" type="SpotLight3D" parent="Camera3D"]
-light_energy = 15.0
-spot_range = 42.853165
-
 [node name="SpotLight3D" type="SpotLight3D" parent="."]
 transform = Transform3D(0.7745472, -0.6064626, 0.17966545, 0, 0.28404883, 0.9588098, -0.6325161, -0.7426435, 0.22000922, 1.946548, 3.4297528, 1.2746582)
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.33293483, 0.94294983, 0, -0.9429499, 0.33293483, 0, 6.098803, 9.444128)
+light_color = Color(0.62, 0.7, 1, 1)
+light_energy = 0.7
+
+[node name="PostProcess" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_post")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
 [node name="HUD" parent="." instance=ExtResource("5_tbgi4")]
 
