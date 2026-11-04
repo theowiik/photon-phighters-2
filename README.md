@@ -33,7 +33,7 @@ shield.
   A).
 - F1 toggles the developer console.
 
-Run `mise run test` for the automated match-loop smoke test.
+Run `mise run test` for the unit tests and the automated match-loop smoke test.
 
 ## Credits
 
