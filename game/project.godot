@@ -17,7 +17,7 @@ config/icon="res://assets/icon.svg"
 
 [autoload]
 
-Groups="*res://scripts/registries/groups.gd"
+Groups="*res://common/groups.gd"
 
 [global_group]
 
