@@ -31,6 +31,7 @@ func _run() -> void:
 	await _test_gamepad_picker()
 	_test_respawn()
 	_test_bulb_claim()
+	await _test_bullet_skips_shooter()
 	game.round_manager.reset()
 	game.round_manager.start()
 	game.round_manager.time_remaining = 0.01
@@ -67,7 +68,12 @@ func _run() -> void:
 		_expect(game.round_wins[player] == 0)
 		_expect(_crystal_count(player) == 0)
 	if not failed:
-		print("PASS: title, countdown, draw, scoring, bot/human picks, match win, replay, respawn")
+		print(
+			(
+				"PASS: title, countdown, draw, scoring, bot/human picks, match win, replay, respawn,"
+				+ " no self-hits"
+			)
+		)
 	get_tree().quit(1 if failed else 0)
 
 
@@ -138,6 +144,29 @@ func _test_bulb_claim() -> void:
 	bulb.claim(game.players[1].team)
 	_expect(game.round_manager.get_score(game.players[0].team) == 0)
 	_expect(game.round_manager.get_score(game.players[1].team) == 1)
+
+
+func _test_bullet_skips_shooter() -> void:
+	var shooter := game.players[0]
+	var target := game.players[1]
+	for player in game.players:
+		player.protection_remaining = 0.0
+	_drop_bullet_on(shooter, shooter)
+	_drop_bullet_on(target, shooter)
+	for _frame in 20:
+		await get_tree().physics_frame
+	_expect(shooter.health == Player.MAX_HEALTH)
+	_expect(target.health < Player.MAX_HEALTH)
+	target.respawn()
+
+
+func _drop_bullet_on(target: Player, shooter: Player) -> void:
+	var bullet: Bullet = preload("res://bullet/bullet.tscn").instantiate()
+	bullet.shooter = shooter
+	bullet.team = shooter.team
+	bullet.velocity = Vector3.DOWN * 30.0
+	game.add_child(bullet)
+	bullet.global_position = target.global_position + Vector3.UP * 4.0
 
 
 func _add_bulb(team: Team) -> Bulb:
