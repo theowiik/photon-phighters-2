@@ -10,8 +10,18 @@ func _init(team_name: String, team_color: Color) -> void:
 	color = team_color
 
 
-func get_hex() -> String:
-	return color.to_html(false)
+static func contrasting_pair() -> Array[Team]:
+	var pairs: Array[Array] = [
+		[red(), cyan()],
+		[blue(), orange()],
+		[green(), purple()],
+		[yellow(), purple()],
+		[pink(), green()],
+	]
+	var pair: Array = pairs.pick_random()
+	pair.shuffle()
+	var teams: Array[Team] = [pair[0], pair[1]]
+	return teams
 
 
 static func red() -> Team:

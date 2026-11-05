@@ -7,15 +7,9 @@ func get_all_players() -> Array[Player]:
 	return result
 
 
-func get_all_bullets() -> Array[Node3D]:
-	var result: Array[Node3D] = []
-	_collect_group(Constants.BULLETS_GROUP, Node3D, result)
-	return result
-
-
-func get_all_bulbs() -> Array[Area3D]:
-	var result: Array[Area3D] = []
-	_collect_group(Constants.BULBS_GROUP, Area3D, result)
+func get_all_bulbs() -> Array[Bulb]:
+	var result: Array[Bulb] = []
+	_collect_group(Constants.BULBS_GROUP, Bulb, result)
 	return result
 
 

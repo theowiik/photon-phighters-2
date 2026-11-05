@@ -1,9 +1,9 @@
 class_name FastBulletsDecorator
 extends ShooterDecorator
 
-var speed_multiplier: float = 2.0
+const SPEED_MULTIPLIER: float = 2.0
 
 
 func shoot(context: ShootingContext) -> Array[Bullet]:
-	context.speed_multiplier *= speed_multiplier
+	context.speed_multiplier *= SPEED_MULTIPLIER
 	return wrapped_shooter.shoot(context)

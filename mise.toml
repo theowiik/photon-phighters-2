@@ -34,3 +34,11 @@ run = [
 [tasks.build]
 description = "Export Linux and Windows builds"
 run = "uv run python tools/export_game.py"
+
+[tasks.test]
+description = "Run the unit and gameplay tests"
+run = [
+    "godot --headless --path game --import",
+    "godot --headless --path game res://tests/unit_test.tscn",
+    "godot --headless --path game res://tests/gameplay_test.tscn",
+]

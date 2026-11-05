@@ -5,6 +5,7 @@ enum State {GROUNDED, INITIATE_JUMP, JUMP_UP, JUMP_DOWN, LANDING, IDLE, WALL_GLI
 
 const DEFAULT_BLEND: float = 0.1
 const LANDING_BLEND: float = 0.05
+const WALK_ANIMATION_SPEED: float = 5.0
 
 var animation_player: AnimationPlayer
 var body: Node3D
@@ -13,7 +14,7 @@ var was_on_floor: bool = true
 var facing_right: bool = true
 
 
-func _init(anim_player: AnimationPlayer, body_node: Node3D):
+func _init(anim_player: AnimationPlayer, body_node: Node3D) -> void:
 	animation_player = anim_player
 	body = body_node
 
@@ -24,20 +25,22 @@ func update(
 	is_on_wall: bool = false,
 	wall_normal: Vector3 = Vector3.ZERO
 ) -> void:
-	var new_state = _determine_state(velocity.y, is_on_floor, is_on_wall)
+	var new_state := _determine_state(velocity.y, is_on_floor, is_on_wall)
 
 	if new_state == State.WALL_GLIDE:
-		var wall_on_left = wall_normal.x > 0
+		var wall_on_left := wall_normal.x > 0
 		body.scale.x = -1.0 if wall_on_left else 1.0
 		facing_right = not wall_on_left
 	elif new_state != State.WALL_GLIDE_JUMP:
 		_update_facing(velocity.x)
 
-	if abs(velocity.x) < 0.1 and is_on_floor:
+	if absf(velocity.x) < 0.1 and is_on_floor:
 		new_state = State.IDLE
 
 	if new_state != current_state:
 		_transition_to(new_state)
+	if current_state == State.GROUNDED:
+		animation_player.speed_scale = clampf(absf(velocity.x) / WALK_ANIMATION_SPEED, 0.6, 2.0)
 
 	was_on_floor = is_on_floor
 

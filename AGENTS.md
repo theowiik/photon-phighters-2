@@ -89,25 +89,36 @@ Run from the repository root.
 - `mise run format`: format Markdown, Python and GDScript.
 - `mise run check`: run all format checks, `gdlint`, the naming check and the GDScript
   validator.
+- `mise run test`: run the unit tests and the gameplay match-loop test.
 - `mise run build`: export Linux and Windows builds.
 
 mise is the only requirement. It installs the pinned Godot and uv on Windows, macOS and
 Linux, and uv installs the Python tools from `uv.lock`. The first `mise run build`
 downloads about 1.2 GiB of export templates into Godot's data directory. CI (GitHub
-Actions) runs `mise run check` on all three systems and `mise run build` on Linux for
-every pull request.
+Actions) runs `mise run check` and `mise run test` on all three systems and
+`mise run build` on Linux for every pull request.
 
 ## Architecture
 
-- `main/main.gd` is a small state machine (`PLAYING`, `ROUND_END`, `PICKING`). It starts
-  rounds through `RoundManager`, shows the crystal picker to the round loser and applies
-  the picked crystal.
-- `main/round_manager.gd` owns the round timer and scores. Scores are counted per team
-  color hex from the bulbs in the `bulbs` group.
-- `player/player.gd` wires together input, movement, shooting, animation and team color.
+- `main/main.gd` is a small state machine (`TITLE`, `COUNTDOWN`, `PLAYING`,
+  `ROUND_OVER`, `PICKING`, `MATCH_OVER`). It pauses the tree outside `TITLE` and
+  `PLAYING`, starts rounds through `RoundManager`, shows the crystal picker to the round
+  loser and applies the picked crystal. The title screen runs a bot match.
+- `main/follow_camera.gd` zooms to fit both players and shakes on hits and knockouts.
+  `main/sky.gdshader` and `main/post_process.gdshader` give the scene its look.
+- UI uses the project theme in `hud/ui_theme.tres`; style labels with its type
+  variations (`Banner`, `Score`, `Clock`, `Heading`, `Subtle`) instead of per-node
+  overrides.
+- `main/round_manager.gd` owns the round timer and scores. Scores are counted per `Team`
+  from the bulbs in the `bulbs` group.
+- The game is 1v1. `Main` owns the two players and hands them to `RoundManager` and the
+  HUD.
+- `player/player.gd` wires together input, movement, shooting and animation.
+  `player/player_body.gd` paints the body in the team color and flashes it on hits.
 - Player abilities use the decorator pattern:
   - Movement: `MoverInterface` → `BaseMover`, wrapped by subclasses of `MoverDecorator`
-    in `player/movement/decorators/`.
+    in `player/movement/decorators/`. Decorators adjust a `MovementContext` (speed,
+    extra jumps) and `BaseMover` does the physics.
   - Shooting: `ShooterInterface` → `BaseShooter`, wrapped by subclasses of
     `ShooterDecorator` in `player/shooting/decorators/`. Decorators adjust a
     `ShootingContext` and pass it down the chain.
@@ -127,7 +138,8 @@ every pull request.
 ## Conventions
 
 - No inline comments. Prefer clear names. `##` doc comments on members are fine.
-- Use static typing for variables, parameters and return types.
+- Use static typing for variables, parameters and return types. Godot treats an untyped
+  declaration as an error (`untyped_declaration` in `project.godot`).
 - Every reusable script declares a `class_name`.
 - File and directory names are `snake_case` (`ALL_CAPS` for files like `README.md`).
   Scene files match their root node (`player.tscn` → `Player`). Source art in the root

@@ -1,49 +1,173 @@
-[gd_scene load_steps=3 format=3 uid="uid://dacw2gn4smkwj"]
+[gd_scene load_steps=2 format=3 uid="uid://dacw2gn4smkwj"]
 
 [ext_resource type="Script" uid="uid://fspuivr1mf8v" path="res://hud/hud.gd" id="1_ahhtf"]
-[ext_resource type="FontFile" uid="uid://b0he2rrpenx1d" path="res://assets/fonts/cascadia_mono.ttf" id="2_oo0fn"]
 
 [node name="HUD" type="Control"]
+process_mode = 3
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 script = ExtResource("1_ahhtf")
 
-[node name="ConsoleLineEdit" type="LineEdit" parent="."]
-layout_mode = 0
-offset_left = 24.0
-offset_top = 586.0
-offset_right = 337.0
-offset_bottom = 629.0
-theme_override_fonts/font = ExtResource("2_oo0fn")
+[node name="Dim" type="ColorRect" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.5)
+
+[node name="Scoreboard" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -240.0
+offset_top = 12.0
+offset_right = 240.0
+offset_bottom = 104.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_constants/separation = 28
+
+[node name="Left" type="VBoxContainer" parent="Scoreboard"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/separation = -8
+
+[node name="Score" type="Label" parent="Scoreboard/Left"]
+layout_mode = 2
+theme_type_variation = &"Score"
+text = "0"
+horizontal_alignment = 2
+
+[node name="Wins" type="Label" parent="Scoreboard/Left"]
+layout_mode = 2
+theme_type_variation = &"Subtle"
+text = "○ ○ ○"
+horizontal_alignment = 2
+
+[node name="Time" type="Label" parent="Scoreboard"]
+custom_minimum_size = Vector2(72, 0)
+layout_mode = 2
+size_flags_vertical = 0
+theme_type_variation = &"Clock"
+text = "30"
+horizontal_alignment = 1
+
+[node name="Right" type="VBoxContainer" parent="Scoreboard"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/separation = -8
+
+[node name="Score" type="Label" parent="Scoreboard/Right"]
+layout_mode = 2
+theme_type_variation = &"Score"
+text = "0"
+
+[node name="Wins" type="Label" parent="Scoreboard/Right"]
+layout_mode = 2
+theme_type_variation = &"Subtle"
+text = "○ ○ ○"
+
+[node name="Loadouts" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 28.0
+offset_top = -48.0
+offset_right = -28.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="Left" type="Label" parent="Loadouts"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"Subtle"
+
+[node name="Right" type="Label" parent="Loadouts"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"Subtle"
+horizontal_alignment = 2
+
+[node name="Banner" type="VBoxContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Title" type="Label" parent="Banner"]
+layout_mode = 2
+theme_type_variation = &"Banner"
+horizontal_alignment = 1
+
+[node name="Detail" type="Label" parent="Banner"]
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="Prompt" type="Label" parent="Banner"]
+layout_mode = 2
+theme_type_variation = &"Subtle"
+horizontal_alignment = 1
+
+[node name="Controls" type="Label" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -96.0
+offset_bottom = -28.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_type_variation = &"Subtle"
+horizontal_alignment = 1
+
+[node name="Console" type="PanelContainer" parent="."]
+visible = false
+layout_mode = 1
+anchor_left = 0.03
+anchor_top = 0.4
+anchor_right = 0.6
+anchor_bottom = 0.92
+
+[node name="Content" type="VBoxContainer" parent="Console"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Console/Content"]
+layout_mode = 2
+theme_type_variation = &"Subtle"
+text = "Console · F1 to close"
+
+[node name="ConsoleLabel" type="RichTextLabel" parent="Console/Content"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/normal_font_size = 14
+scroll_following = true
+
+[node name="ConsoleLineEdit" type="LineEdit" parent="Console/Content"]
+layout_mode = 2
 placeholder_text = "/help"
 
-[node name="ConsoleLabel" type="RichTextLabel" parent="."]
-layout_mode = 0
-offset_left = 28.0
-offset_top = 356.0
-offset_right = 608.0
-offset_bottom = 565.0
-theme_override_fonts/normal_font = ExtResource("2_oo0fn")
-theme_override_font_sizes/normal_font_size = 13
-
-[node name="TimeLabel" type="Label" parent="."]
-layout_mode = 0
-offset_left = 19.0
-offset_top = 31.0
-offset_right = 59.0
-offset_bottom = 54.0
-text = "time"
-
-[node name="ScoreLabel" type="RichTextLabel" parent="."]
-layout_mode = 0
-offset_left = 70.0
-offset_top = 109.0
-offset_right = 1116.0
-offset_bottom = 266.0
-text = "hello world"
-
-[connection signal="text_submitted" from="ConsoleLineEdit" to="." method="_on_console_line_edit_text_submitted"]
+[connection signal="text_submitted" from="Console/Content/ConsoleLineEdit" to="." method="_on_console_line_edit_text_submitted"]

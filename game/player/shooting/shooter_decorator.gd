@@ -4,7 +4,7 @@ extends ShooterInterface
 var wrapped_shooter: ShooterInterface
 
 
-func _init(shooter: ShooterInterface):
+func _init(shooter: ShooterInterface) -> void:
 	wrapped_shooter = shooter
 
 

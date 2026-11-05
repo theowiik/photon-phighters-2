@@ -1,25 +1,27 @@
 class_name Player
 extends CharacterBody3D
 
-# Controller
-@export var device_id: int = 0
-@export var use_bot_input: bool = false
+signal damaged
+signal knocked_out
 
-var team_presets: Array[Callable] = [
-	Team.red, Team.blue, Team.green, Team.orange, Team.purple, Team.cyan, Team.yellow, Team.pink
-]
+const MAX_HEALTH: float = 100.0
+const RESPAWN_DELAY: float = 1.5
+const SPAWN_PROTECTION: float = 1.0
+const HEALTH_BAR_SEGMENTS: int = 10
+const PROTECTION_BLINK_SECONDS: float = 0.08
+
+@export var display_name: String = "P1"
+
 var team: Team
 var input: InputInterface
-var health: float = 100.0
-
-# Movement
+var health: float = MAX_HEALTH
+var spawn_position: Vector3
+var is_knocked_out: bool = false
+var respawn_time_remaining: float = 0.0
+var protection_remaining: float = 0.0
 var mover: MoverInterface
 var base_mover: MoverInterface
 var mover_decorator_names: Array[String] = []
-var jump_count: int = 0
-var external_velocity: Vector3 = Vector3.ZERO
-
-# Shooting
 var shooter: ShooterInterface
 var base_shooter: ShooterInterface
 var shooter_decorator_names: Array[String] = []
@@ -27,22 +29,21 @@ var shoot_cooldown: float = 0.0
 var animation_manager: AnimationManager
 
 @onready var aim_pivot: Node3D = $AimPivot
+@onready var collision_shape: CollisionShape3D = $CollisionShape3D
 @onready var flashlight: Flashlight = $Flashlight
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
-@onready var body: Node3D = $Body
+@onready var body: PlayerBody = $Body
 @onready var health_label: Label3D = $HealthLabel
-@onready var hurt_player: AudioStreamPlayer3D = $HurtPlayer
+@onready var hurt_player: AudioStreamPlayer = $HurtPlayer
+@onready var shoot_player: AudioStreamPlayer = $ShootPlayer
+@onready var jump_player: AudioStreamPlayer = $JumpPlayer
 
 
-func _ready():
-	team = team_presets.pick_random().call()
+func _ready() -> void:
+	spawn_position = global_position
+	input = KeyboardMouseInput.new(aim_pivot)
 
-	if use_bot_input:
-		input = NaiveBotInput.new(self)
-	else:
-		input = DevInput.new(self)
-
-	base_mover = BaseMover.new(5.0)
+	base_mover = BaseMover.new()
 	mover = base_mover
 
 	base_shooter = BaseShooter.new()
@@ -52,10 +53,23 @@ func _ready():
 	flashlight.target_position = $AimPivot/DesiredFlashlightPosition
 	flashlight.aim_origin = aim_pivot
 
-	_apply_team_color()
+	set_team(Team.red())
+	_update_health_label()
 
 
-func _physics_process(delta):
+func _physics_process(delta: float) -> void:
+	if is_knocked_out:
+		respawn_time_remaining -= delta
+		if respawn_time_remaining <= 0.0:
+			respawn()
+		return
+
+	if protection_remaining > 0.0:
+		protection_remaining = maxf(protection_remaining - delta, 0.0)
+		body.visible = (
+			protection_remaining == 0.0
+			or fmod(protection_remaining, PROTECTION_BLINK_SECONDS * 2.0) > PROTECTION_BLINK_SECONDS
+		)
 	input.update()
 	_process_shooting(delta)
 	_process_movement(delta)
@@ -65,38 +79,37 @@ func _process_shooting(delta: float) -> void:
 	if shoot_cooldown > 0:
 		shoot_cooldown -= delta
 
-	var aim_input = input.get_aim_direction()
+	var aim_input := input.get_aim_direction()
 	if aim_input.length() > 0:
-		var angle = -atan2(aim_input.y, aim_input.x)
-		aim_pivot.rotation.z = angle
+		aim_pivot.rotation.z = -atan2(aim_input.y, aim_input.x)
 
 	if input.is_shoot_pressed() and shoot_cooldown <= 0:
-		var shoot_pos = flashlight.shoot_position.global_position
-		var direction = -flashlight.global_transform.basis.z
-		var context = ShootingContext.new(shoot_pos, direction, team, get_parent(), self)
+		var direction := -flashlight.global_transform.basis.z
+		var context := ShootingContext.new(
+			flashlight.shoot_position.global_position, direction, team, get_parent(), self
+		)
 
 		shooter.shoot(context)
 		shoot_cooldown = shooter.get_shoot_delay()
+		flashlight.kick(direction)
+		shoot_player.pitch_scale = randf_range(0.9, 1.15)
+		shoot_player.play()
 
 
 func _process_movement(delta: float) -> void:
-	var context = MovementContext.new(
-		velocity.y, is_on_floor(), input.is_jump_just_pressed(), jump_count
-	)
+	var context := MovementContext.new()
+	context.velocity = velocity
+	context.is_on_floor = is_on_floor()
 	context.is_on_wall = is_on_wall()
-	if context.is_on_wall:
-		context.wall_normal = get_wall_normal()
+	context.wall_normal = get_wall_normal()
+	context.jump_pressed = input.is_jump_just_pressed()
+	context.jump_held = input.is_jump_held()
 
 	velocity = mover.process_movement(input.get_movement(), delta, context)
-	jump_count = context.jump_count
+	if velocity.y > context.velocity.y + 1.0:
+		jump_player.play()
 
-	velocity += external_velocity
-	external_velocity = external_velocity.lerp(Vector3.ZERO, 10.0 * delta)
-	if external_velocity.length() < 0.1:
-		external_velocity = Vector3.ZERO
-
-	var locked_z = global_position.z
-	velocity.z = 0
+	var locked_z := global_position.z
 	move_and_slide()
 	global_position.z = locked_z
 	velocity.z = 0
@@ -104,14 +117,59 @@ func _process_movement(delta: float) -> void:
 	animation_manager.update(velocity, is_on_floor(), is_on_wall(), get_wall_normal())
 
 
+func is_bot() -> bool:
+	return input is NaiveBotInput
+
+
 func apply_impulse(impulse: Vector3) -> void:
-	external_velocity += impulse
+	velocity += impulse
 
 
 func take_damage(amount: float) -> void:
+	if is_knocked_out or protection_remaining > 0.0:
+		return
+
 	hurt_player.play()
-	health -= amount
-	health_label.text = str(health)
+	damaged.emit()
+	body.flash()
+	health = maxf(health - amount, 0.0)
+	_update_health_label()
+	if health == 0.0:
+		knock_out()
+
+
+func knock_out() -> void:
+	if is_knocked_out:
+		return
+
+	is_knocked_out = true
+	knocked_out.emit()
+	visible = false
+	collision_shape.set_deferred("disabled", true)
+	set_deferred("global_position", spawn_position)
+	respawn_time_remaining = RESPAWN_DELAY
+
+
+func respawn() -> void:
+	is_knocked_out = false
+	health = MAX_HEALTH
+	respawn_time_remaining = 0.0
+	protection_remaining = SPAWN_PROTECTION
+	shoot_cooldown = 0.0
+	global_position = spawn_position
+	velocity = Vector3.ZERO
+	flashlight.global_position = flashlight.target_position.global_position
+	flashlight.linear_velocity = Vector3.ZERO
+	flashlight.angular_velocity = Vector3.ZERO
+	visible = true
+	collision_shape.set_deferred("disabled", false)
+	_update_health_label()
+
+
+func _update_health_label() -> void:
+	var filled := ceili(health / MAX_HEALTH * HEALTH_BAR_SEGMENTS)
+	health_label.text = "█".repeat(filled) + "░".repeat(HEALTH_BAR_SEGMENTS - filled)
+	health_label.visible = health < MAX_HEALTH
 
 
 func apply_crystal(crystal_name: String) -> bool:
@@ -128,26 +186,20 @@ func apply_crystal(crystal_name: String) -> bool:
 	return false
 
 
-func _rebuild_movement_chain():
+func _rebuild_movement_chain() -> void:
 	mover = base_mover
 	for crystal_name in mover_decorator_names:
 		mover = CrystalRegistry.create_movement_decorator(crystal_name, mover)
 
 
-func _rebuild_shooting_chain():
+func _rebuild_shooting_chain() -> void:
 	shooter = base_shooter
 	for crystal_name in shooter_decorator_names:
 		shooter = CrystalRegistry.create_shooting_decorator(crystal_name, shooter)
 
 
-func _apply_team_color() -> void:
-	for child in body.get_children():
-		for mesh_instance in child.get_children():
-			if mesh_instance is MeshInstance3D:
-				var material = mesh_instance.get_active_material(0)
-				if material:
-					material = material.duplicate()
-					material.albedo_color = team.color
-					mesh_instance.set_surface_override_material(0, material)
-
+func set_team(new_team: Team) -> void:
+	team = new_team
+	body.set_color(team.color)
 	flashlight.set_color(team.color)
+	health_label.modulate = team.color

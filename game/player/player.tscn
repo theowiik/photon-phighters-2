@@ -1,6 +1,6 @@
-[gd_scene load_steps=23 format=3 uid="uid://wilclsh64myp"]
+[gd_scene load_steps=26 format=3 uid="uid://wilclsh64myp"]
 
-[ext_resource type="Texture2D" uid="uid://co5yey2y7yboh" path="res://assets/icon.svg" id="1_eqqp1"]
+[ext_resource type="Script" uid="uid://xbop3wbqynax" path="res://player/player_body.gd" id="1_body"]
 [ext_resource type="Script" uid="uid://cphs6p6g4lci0" path="res://player/player.gd" id="2_ykyjo"]
 [ext_resource type="PackedScene" uid="uid://d3q8721w4j0h5" path="res://assets/player/body.fbx" id="3_nmc1l"]
 [ext_resource type="PackedScene" uid="uid://cslt4jk1qkwb2" path="res://assets/player/head.fbx" id="5_3rerk"]
@@ -10,6 +10,9 @@
 [ext_resource type="PackedScene" uid="uid://vfquhx8cjla5" path="res://assets/player/right_foot.fbx" id="8_3rfka"]
 [ext_resource type="PackedScene" uid="uid://v38g5whwnt52" path="res://player/flashlight.tscn" id="9_i8sra"]
 [ext_resource type="AudioStream" uid="uid://cj4ksnx6aerhl" path="res://assets/sfx/player/hurt.wav" id="10_bi5m7"]
+[ext_resource type="AudioStream" uid="uid://d362oexwpvfov" path="res://assets/sfx/player/shoot.wav" id="11_shoot"]
+[ext_resource type="AudioStream" uid="uid://bjkh7bc2jbrqt" path="res://assets/sfx/player/jump.wav" id="12_jump"]
+[ext_resource type="FontFile" uid="uid://b0he2rrpenx1d" path="res://assets/fonts/cascadia_mono.ttf" id="13_font"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ykyjo"]
 
@@ -1472,12 +1475,9 @@ script = ExtResource("2_ykyjo")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.54168046, 0)
 shape = SubResource("CapsuleShape3D_ykyjo")
 
-[node name="Sprite3D" type="Sprite3D" parent="."]
-visible = false
-texture = ExtResource("1_eqqp1")
-
 [node name="Body" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5293977, 0)
+script = ExtResource("1_body")
 
 [node name="Torso" parent="Body" instance=ExtResource("3_nmc1l")]
 transform = Transform3D(0.20044534, 0, 0.9797049, 0, 1.0000001, 0, -0.9797049, 0, 0.20044534, 0, -0.7441906, 0)
@@ -1514,10 +1514,20 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.12713635, 0, 0)
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 1.812, 0.762, 0)
 
 [node name="HealthLabel" type="Label3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.9536114, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3, 0)
 billboard = 1
-text = "hello world"
-font_size = 172
+text = "P1 ██████████"
+font = ExtResource("13_font")
+font_size = 64
+outline_size = 16
 
-[node name="HurtPlayer" type="AudioStreamPlayer3D" parent="."]
+[node name="HurtPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("10_bi5m7")
+
+[node name="ShootPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("11_shoot")
+volume_db = -10.0
+
+[node name="JumpPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("12_jump")
+volume_db = -6.0

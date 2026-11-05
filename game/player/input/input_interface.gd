@@ -16,16 +16,6 @@ func get_aim_direction() -> Vector2:
 	return Vector2.ZERO
 
 
-func is_aiming() -> bool:
-	push_error("InputInterface.is_aiming() not implemented")
-	return false
-
-
-func is_shoot_just_pressed() -> bool:
-	push_error("InputInterface.is_shoot_just_pressed() not implemented")
-	return false
-
-
 func is_shoot_pressed() -> bool:
 	push_error("InputInterface.is_shoot_pressed() not implemented")
 	return false
@@ -33,4 +23,9 @@ func is_shoot_pressed() -> bool:
 
 func is_jump_just_pressed() -> bool:
 	push_error("InputInterface.is_jump_just_pressed() not implemented")
+	return false
+
+
+func is_jump_held() -> bool:
+	push_error("InputInterface.is_jump_held() not implemented")
 	return false

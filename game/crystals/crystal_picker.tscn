@@ -1,7 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://b4d1mff5ya0g4"]
+[gd_scene load_steps=2 format=3 uid="uid://b4d1mff5ya0g4"]
 
 [ext_resource type="Script" uid="uid://b8hhrmdvyycj4" path="res://crystals/crystal_picker.gd" id="1_mswqd"]
-[ext_resource type="PackedScene" uid="uid://c43ctoschg12q" path="res://crystals/crystal_button.tscn" id="2_rpxrj"]
 
 [node name="CrystalPicker" type="Control"]
 process_mode = 3
@@ -13,7 +12,16 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_mswqd")
 
-[node name="Content" type="VBoxContainer" parent="."]
+[node name="Backdrop" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="Center" type="CenterContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -21,14 +29,25 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ResultLabel" type="RichTextLabel" parent="Content"]
+[node name="Content" type="VBoxContainer" parent="Center"]
+custom_minimum_size = Vector2(520, 0)
 layout_mode = 2
-text = "THIS TEAM WON! THIS PLAYER SHOULD PICK A CRYSTAL"
-fit_content = true
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Center/Content"]
+layout_mode = 2
+theme_type_variation = &"Heading"
 horizontal_alignment = 1
 
-[node name="Buttons" type="VBoxContainer" parent="Content"]
+[node name="Spacer" type="Control" parent="Center/Content"]
+custom_minimum_size = Vector2(0, 8)
 layout_mode = 2
 
-[node name="CrystalButton" parent="Content/Buttons" instance=ExtResource("2_rpxrj")]
+[node name="Buttons" type="VBoxContainer" parent="Center/Content"]
 layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Hint" type="Label" parent="Center/Content"]
+layout_mode = 2
+theme_type_variation = &"Subtle"
+horizontal_alignment = 1

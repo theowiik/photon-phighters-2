@@ -7,17 +7,20 @@ var from_position: Vector3
 var direction: Vector3
 var team: Team
 var parent: Node
-var player: CharacterBody3D
-var bullet_speed: float = 0.0
-var bullet_scene: PackedScene = null
+var player: Player
 var speed_multiplier: float = 1.0
-var delay_multiplier: float = 1.0
 var extra_shots: int = 0
 
 
-func _init(pos: Vector3, dir: Vector3, t: Team, p: Node, player_ref: CharacterBody3D = null):
-	from_position = pos
-	direction = dir
-	team = t
-	parent = p
-	player = player_ref
+func _init(
+	shot_from: Vector3,
+	shot_direction: Vector3,
+	shooter_team: Team,
+	bullet_parent: Node,
+	shooter: Player
+) -> void:
+	from_position = shot_from
+	direction = shot_direction
+	team = shooter_team
+	parent = bullet_parent
+	player = shooter

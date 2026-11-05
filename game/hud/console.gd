@@ -2,54 +2,46 @@ class_name Console
 extends RefCounted
 
 var output_label: RichTextLabel
-var scene_tree: SceneTree
-var commands: Dictionary = {}
+var commands: Dictionary[String, Callable] = {
+	"apply": _cmd_apply,
+	"list": _cmd_list,
+	"help": _cmd_help,
+}
 
 
-func _init(output: RichTextLabel, tree: SceneTree):
+func _init(output: RichTextLabel) -> void:
 	output_label = output
-	scene_tree = tree
-	_register_commands()
 
 
-func _register_commands():
-	commands["apply"] = _cmd_apply
-	commands["list"] = _cmd_list
-	commands["help"] = _cmd_help
-
-
-func execute(input: String):
-	var parts = input.split(" ", false)
-	if parts.size() == 0:
+func execute(input: String) -> void:
+	var parts := input.split(" ", false)
+	if parts.is_empty():
 		return
 
-	var command = parts[0].trim_prefix("/")
-	var args = parts.slice(1)
-
+	var command := parts[0].trim_prefix("/")
 	if commands.has(command):
-		commands[command].call(args)
+		commands[command].call(parts.slice(1))
 	else:
 		write("Unknown command: " + command)
 		write("Type /help for available commands")
 
 
-func write(text: String):
+func write(text: String) -> void:
 	output_label.text += text + "\n"
 
 
-func _cmd_apply(args: Array):
-	if args.size() < 1:
+func _cmd_apply(args: PackedStringArray) -> void:
+	if args.is_empty():
 		write("Usage: /apply <crystal_name>")
 		return
 
-	var crystal_name = args[0]
-	var players = _get_players()
-
-	if players.size() == 0:
+	var crystal_name := args[0]
+	var players := Groups.get_all_players()
+	if players.is_empty():
 		write("No players found")
 		return
 
-	var success_count = 0
+	var success_count := 0
 	for player in players:
 		if player.apply_crystal(crystal_name):
 			success_count += 1
@@ -57,23 +49,17 @@ func _cmd_apply(args: Array):
 	if success_count > 0:
 		write("Applied '%s' to %d player(s)" % [crystal_name, success_count])
 	else:
-		write("Failed to apply '%s' (already active or invalid)" % crystal_name)
+		write("Failed to apply '%s' (unknown crystal)" % crystal_name)
 
 
-func _cmd_list(_args: Array):
-	var registry = CrystalRegistry.new()
-	var crystals = registry.get_all_crystals()
+func _cmd_list(_args: PackedStringArray) -> void:
 	write("Available crystals:")
-	for crystal in crystals:
+	for crystal in CrystalRegistry.get_all_crystals():
 		write("  - " + crystal)
 
 
-func _cmd_help(_args: Array):
+func _cmd_help(_args: PackedStringArray) -> void:
 	write("Available commands:")
 	write("  /apply <crystal_name> - Apply crystal to all players")
 	write("  /list - List all available crystals")
 	write("  /help - Show this help message")
-
-
-func _get_players() -> Array:
-	return scene_tree.get_nodes_in_group(Constants.PLAYERS_GROUP)
