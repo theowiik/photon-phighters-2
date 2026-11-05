@@ -22,7 +22,6 @@ var round_wins: Dictionary[Player, int] = {}
 
 func _ready() -> void:
 	_assign_teams()
-	_assign_inputs()
 	for player in players:
 		round_wins[player] = 0
 
@@ -31,6 +30,7 @@ func _ready() -> void:
 	round_manager.scores_updated.connect(hud.update_scores)
 	round_manager.round_finished.connect(_on_round_finished)
 	hud.start_requested.connect(_on_start_requested)
+	Input.joy_connection_changed.connect(_on_joy_connection_changed)
 	hud.setup(players, round_wins)
 
 	if has_shown_title:
@@ -47,11 +47,20 @@ func _assign_teams() -> void:
 
 func _assign_inputs() -> void:
 	var gamepads := Input.get_connected_joypads()
-	players[0].input = KeyboardMouseInput.new(players[0].aim_pivot)
+	if gamepads.size() >= 2:
+		players[0].input = GamepadInput.new(gamepads[0])
+	else:
+		players[0].input = KeyboardMouseInput.new(players[0].aim_pivot)
+
 	if gamepads.is_empty():
 		players[1].input = NaiveBotInput.new(players[1])
 	else:
-		players[1].input = GamepadInput.new(gamepads[0])
+		players[1].input = GamepadInput.new(gamepads[-1])
+
+
+func _on_joy_connection_changed(_device: int, _connected: bool) -> void:
+	if state == GameState.TITLE:
+		hud.show_title(_controls_text())
 
 
 func _set_state(new_state: GameState) -> void:
@@ -68,19 +77,20 @@ func _show_title() -> void:
 
 
 func _controls_text() -> String:
-	var player_two := "Left stick move · A jump · Right stick aim · RT shoot"
-	if Input.get_connected_joypads().is_empty():
+	var gamepad_controls := "Left stick move · A jump · Right stick aim · RT shoot"
+	var gamepad_count := Input.get_connected_joypads().size()
+	var player_one := "A/D move · W or Space jump · Mouse aim · Click shoot"
+	var player_two := gamepad_controls
+	if gamepad_count >= 2:
+		player_one = gamepad_controls
+	if gamepad_count == 0:
 		player_two = "Bot · connect a gamepad to play against a friend"
-	return (
-		"P1  A/D move · W or Space jump · Mouse aim · Click shoot\nP2  %s\nFirst to %d rounds"
-		% [player_two, Constants.ROUNDS_TO_WIN]
-	)
+	return "P1  %s\nP2  %s\nFirst to %d rounds" % [player_one, player_two, Constants.ROUNDS_TO_WIN]
 
 
 func _on_start_requested() -> void:
 	match state:
 		GameState.TITLE:
-			_assign_inputs()
 			has_shown_title = true
 			_start_round()
 		GameState.MATCH_OVER:
@@ -89,6 +99,7 @@ func _on_start_requested() -> void:
 
 func _start_round() -> void:
 	round_number += 1
+	_assign_inputs()
 	round_manager.reset()
 	for player in players:
 		player.respawn()
