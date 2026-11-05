@@ -24,5 +24,6 @@ func _spawn_bullet(context: ShootingContext, direction: Vector3) -> Bullet:
 	bullet.position = context.from_position
 	bullet.velocity = direction.normalized() * BULLET_SPEED * context.speed_multiplier
 	bullet.team = context.team
+	bullet.shooter = context.player
 	context.parent.add_child(bullet)
 	return bullet

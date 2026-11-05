@@ -8,6 +8,7 @@ const WOBBLE_FREQUENCY: float = 12.0
 const HIT_KNOCKBACK: float = 4.5
 
 var team: Team = Team.white()
+var shooter: Player
 var velocity: Vector3 = Vector3.ZERO
 var damage: float = 10.0
 var wobble_amount: float = 0.0
@@ -32,6 +33,8 @@ func _ready() -> void:
 	_ray_query.collision_mask = collision_mask
 	_ray_query.collide_with_areas = false
 	_ray_query.collide_with_bodies = true
+	if shooter:
+		_ray_query.exclude = [shooter.get_rid()]
 
 
 func _physics_process(delta: float) -> void:

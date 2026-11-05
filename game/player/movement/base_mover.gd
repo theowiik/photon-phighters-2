@@ -1,18 +1,18 @@
 class_name BaseMover
 extends MoverInterface
 
-const SPEED: float = 7.5
+const SPEED: float = 9.0
 const GROUND_ACCELERATION: float = 70.0
 const GROUND_DECELERATION: float = 90.0
 const AIR_ACCELERATION: float = 40.0
-const JUMP_VELOCITY: float = 12.0
+const JUMP_VELOCITY: float = 13.5
 const GRAVITY: float = 28.0
 const FALL_GRAVITY_MULTIPLIER: float = 1.5
 const RELEASED_JUMP_GRAVITY_MULTIPLIER: float = 2.5
 const MAX_FALL_SPEED: float = 24.0
 const WALL_SLIDE_SPEED: float = 3.5
-const WALL_JUMP_VELOCITY: float = 11.0
-const WALL_JUMP_PUSH: float = 9.0
+const WALL_JUMP_VELOCITY: float = 14.5
+const WALL_JUMP_PUSH: float = 12.0
 const COYOTE_TIME: float = 0.1
 const JUMP_BUFFER_TIME: float = 0.12
 
