@@ -61,7 +61,6 @@ func _on_node_added(node: Node) -> void:
 	if node.is_in_group(Constants.BULBS_GROUP):
 		if not node.bulb_hit.is_connected(_on_bulb_hit):
 			node.bulb_hit.connect(_on_bulb_hit)
-		recalculate_scores()
 
 
 func _on_bulb_hit(_team: Team) -> void:
