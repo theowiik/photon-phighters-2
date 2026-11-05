@@ -10,6 +10,8 @@ const CRYSTAL_CHOICES: int = 3
 
 static var has_shown_title: bool = false
 
+@export var map_scene: PackedScene
+
 var crystal_picker_scene: PackedScene = load("res://crystals/crystal_picker.tscn")
 var state: GameState = GameState.TITLE
 var round_number: int = 0
@@ -21,6 +23,7 @@ var round_wins: Dictionary[Player, int] = {}
 
 
 func _ready() -> void:
+	_load_map()
 	_assign_teams()
 	for player in players:
 		round_wins[player] = 0
@@ -37,6 +40,16 @@ func _ready() -> void:
 		_start_round()
 	else:
 		_show_title()
+
+
+func _load_map() -> void:
+	var map := map_scene.instantiate()
+	add_child(map)
+	map.get_node("OutOfBounds").body_entered.connect(_on_ob_body_entered)
+	var spawns := map.get_node("Spawns").get_children()
+	for i in players.size():
+		players[i].spawn_position = spawns[i].global_position
+		players[i].respawn()
 
 
 func _assign_teams() -> void:

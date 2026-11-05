@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://ovaec6nc7m42"]
+[gd_scene load_steps=15 format=3 uid="uid://ovaec6nc7m42"]
 
 [ext_resource type="PackedScene" uid="uid://wilclsh64myp" path="res://player/player.tscn" id="1_o5qli"]
 [ext_resource type="Script" uid="uid://cbldusqpmy3gb" path="res://main/main.gd" id="1_tefeu"]
@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://dacw2gn4smkwj" path="res://hud/hud.tscn" id="5_tbgi4"]
 [ext_resource type="PackedScene" uid="uid://bioo4dk8jqu1w" path="res://lasers/laser_machine.tscn" id="8_tipki"]
 [ext_resource type="PackedScene" uid="uid://ymkakny8f3x5" path="res://lasers/strobe_machine.tscn" id="9_85g3d"]
-[ext_resource type="PackedScene" uid="uid://chrmkwix0kv7c" path="res://assets/maps/tank_mayhem/tank_mayhem.glb" id="10_choun"]
+[ext_resource type="PackedScene" uid="uid://bnrvj0df4mrer" path="res://maps/tank_mayhem.tscn" id="10_choun"]
 [ext_resource type="Shader" path="res://main/sky.gdshader" id="11_sky"]
 [ext_resource type="Shader" path="res://main/post_process.gdshader" id="12_post"]
 
@@ -37,11 +37,9 @@ volumetric_fog_albedo = Color(0.55, 0.6, 0.9, 1)
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_post"]
 shader = ExtResource("12_post")
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_85g3d"]
-size = Vector3(137.51, 3.445, 18.475)
-
 [node name="Main" type="Node3D"]
 script = ExtResource("1_tefeu")
+map_scene = ExtResource("10_choun")
 
 [node name="RoundManager" parent="." instance=ExtResource("2_o6xl0")]
 
@@ -89,16 +87,3 @@ transform = Transform3D(0.9967859, 0.038582593, -0.07021205, -0.0665421, -0.0893
 
 [node name="LaserMachine2" parent="." instance=ExtResource("8_tipki")]
 transform = Transform3D(0.9847502, -0.16756727, -0.04677963, -0.032507997, 0.08692348, -0.99568444, 0.17091039, 0.9820211, 0.080150336, -4.491232, -9.77479, -8.517785)
-
-[node name="tank_mayhem" parent="." instance=ExtResource("10_choun")]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 2.4320564, -0.69313335, 0.49605274)
-
-[node name="OB" type="Area3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -35.4294, 0)
-collision_layer = 0
-collision_mask = 2
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="OB"]
-shape = SubResource("BoxShape3D_85g3d")
-
-[connection signal="body_entered" from="OB" to="." method="_on_ob_body_entered"]

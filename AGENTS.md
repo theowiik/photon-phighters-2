@@ -69,6 +69,7 @@ validation where data enters the game (files, network, user input).
 └── game/              # The Godot project (project.godot lives here)
     ├── assets/        # Imported assets (models, fonts, maps, sounds)
     ├── main/          # Main scene, round manager and camera
+    ├── maps/          # One scene per map: model, spawn points and out-of-bounds area
     ├── player/        # Player scene, flashlight, input, movement and shooting
     ├── crystals/      # Crystal registry and the crystal picker
     ├── hud/           # HUD and dev console
@@ -113,6 +114,8 @@ Actions) runs `mise run check` and `mise run test` on all three systems and
   from the bulbs in the `bulbs` group.
 - The game is 1v1. `Main` owns the two players and hands them to `RoundManager` and the
   HUD.
+- `Main` instantiates the map scene set in its `map_scene` export and moves the players
+  to the map's `Spawns` markers.
 - `player/player.gd` wires together input, movement, shooting and animation.
   `player/player_body.gd` paints the body in the team color and flashes it on hits.
 - Player abilities use the decorator pattern:
