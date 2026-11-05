@@ -1,11 +1,23 @@
 [gd_resource type="Theme" format=3]
 
-[ext_resource type="FontFile" path="res://assets/fonts/cascadia_mono.ttf" id="1_bkdx0"]
+[ext_resource type="FontFile" uid="uid://b0he2rrpenx1d" path="res://assets/fonts/cascadia_mono.ttf" id="1_bkdx0"]
+[ext_resource type="FontFile" uid="uid://de2s37lo4gcbn" path="res://assets/fonts/exo_2.ttf" id="2_exo2"]
+
+[sub_resource type="FontVariation" id="FontVariation_body"]
+fallbacks = Array[Font]([ExtResource("1_bkdx0")])
+base_font = ExtResource("2_exo2")
+variation_opentype = {
+2003265652: 500
+}
 
 [sub_resource type="FontVariation" id="FontVariation_shl6n"]
-base_font = ExtResource("1_bkdx0")
+fallbacks = Array[Font]([ExtResource("1_bkdx0")])
+base_font = ExtResource("2_exo2")
+opentype_features = {
+1953396077: 1
+}
 variation_opentype = {
-2003265652: 700
+2003265652: 800
 }
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_umefo"]
@@ -59,7 +71,7 @@ content_margin_bottom = 16.0
 bg_color = Color(0, 0, 0, 0.8)
 
 [resource]
-default_font = ExtResource("1_bkdx0")
+default_font = SubResource("FontVariation_body")
 default_font_size = 20
 Banner/base_type = &"Label"
 Banner/constants/outline_size = 16
