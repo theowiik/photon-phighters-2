@@ -74,7 +74,7 @@ validation where data enters the game (files, network, user input).
     ├── hud/           # HUD and dev console
     ├── bulb/          # Bulbs that bullets recolor
     ├── bullet/        # Light bullets
-    ├── lasers/        # Laser and strobe hazards
+    ├── lasers/        # Laser and strobe light effects
     └── common/        # Shared constants, groups and teams
 ```
 
@@ -133,7 +133,8 @@ Actions) runs `mise run check` and `mise run test` on all three systems and
 
 1. Create a decorator in `player/movement/decorators/` or `player/shooting/decorators/`
    that extends `MoverDecorator` or `ShooterDecorator` and declares a `class_name`.
-1. Register it in the matching dictionary in `crystals/crystal_registry.gd`.
+1. Register it in the matching dictionary in `crystals/crystal_registry.gd` and add a
+   line to `DESCRIPTIONS` there.
 
 ## Conventions
 
