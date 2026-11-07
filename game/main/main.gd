@@ -1,5 +1,5 @@
 class_name Main
-extends Node3D
+extends Node2D
 
 enum GameState { TITLE, COUNTDOWN, PLAYING, ROUND_OVER, PICKING, MATCH_OVER }
 
@@ -17,7 +17,8 @@ var state: GameState = GameState.TITLE
 var round_number: int = 0
 var round_wins: Dictionary[Player, int] = {}
 
-@onready var hud: HUD = $HUD
+@onready var ui: CanvasLayer = $UI
+@onready var hud: HUD = $UI/HUD
 @onready var round_manager: RoundManager = $RoundManager
 @onready var players: Array[Player] = [$Player1, $Player2]
 
@@ -45,6 +46,7 @@ func _ready() -> void:
 func _load_map() -> void:
 	var map := map_scene.instantiate()
 	add_child(map)
+	move_child(map, 0)
 	map.get_node("OutOfBounds").body_entered.connect(_on_ob_body_entered)
 	var spawns := map.get_node("Spawns").get_children()
 	for i in players.size():
@@ -164,7 +166,7 @@ func _offer_crystals(loser: Player) -> void:
 	hud.hide_banner()
 
 	var picker: CrystalPicker = crystal_picker_scene.instantiate()
-	add_child(picker)
+	ui.add_child(picker)
 	picker.crystal_picked.connect(_on_crystal_picked.bind(loser, picker))
 	var owned := loser.mover_decorator_names + loser.shooter_decorator_names
 	picker.show_choices(loser, CrystalRegistry.random_choices(CRYSTAL_CHOICES, owned))
@@ -185,6 +187,6 @@ func _end_match(winner: Player) -> void:
 	hud.wait_for_start("Press Enter or A to play again")
 
 
-func _on_ob_body_entered(body: Node3D) -> void:
+func _on_ob_body_entered(body: Node2D) -> void:
 	if body is Player:
 		body.knock_out()

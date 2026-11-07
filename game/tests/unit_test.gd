@@ -33,7 +33,7 @@ func _test_ground_jump() -> void:
 	var mover := BaseMover.new()
 	_expect(_jump(mover, true).y == BaseMover.JUMP_VELOCITY)
 	_run(mover, 10, 0.0, false)
-	_expect(_jump(mover, false).y < BaseMover.JUMP_VELOCITY)
+	_expect(_jump(mover, false).y > BaseMover.JUMP_VELOCITY)
 
 
 func _test_coyote_time() -> void:
@@ -45,7 +45,7 @@ func _test_coyote_time() -> void:
 	mover = BaseMover.new()
 	_run(mover, 1, 0.0, true)
 	_run(mover, 10, 0.0, false)
-	_expect(_jump(mover, false).y < BaseMover.JUMP_VELOCITY)
+	_expect(_jump(mover, false).y > BaseMover.JUMP_VELOCITY)
 
 
 func _test_jump_buffer() -> void:
@@ -58,9 +58,9 @@ func _test_jump_buffer() -> void:
 func _test_wall_jump() -> void:
 	var mover := BaseMover.new()
 	_run(mover, 10, 0.0, false)
-	var context := _context(Vector3.ZERO, false)
+	var context := _context(Vector2.ZERO, false)
 	context.is_on_wall = true
-	context.wall_normal = Vector3.RIGHT
+	context.wall_normal = Vector2.RIGHT
 	context.jump_pressed = true
 	var velocity := mover.process_movement(Vector2.ZERO, STEP, context)
 	_expect(velocity.y == BaseMover.WALL_JUMP_VELOCITY)
@@ -73,7 +73,7 @@ func _test_double_jump() -> void:
 	_run(mover, 10, 0.0, false)
 	_expect(_jump(mover, false).y == BaseMover.JUMP_VELOCITY)
 	_run(mover, 10, 0.0, false)
-	_expect(_jump(mover, false).y < BaseMover.JUMP_VELOCITY)
+	_expect(_jump(mover, false).y > BaseMover.JUMP_VELOCITY)
 
 	mover = DoubleJumpDecorator.new(BaseMover.new())
 	_run(mover, 1, 0.0, true)
@@ -118,21 +118,21 @@ func _test_crystal_registry() -> void:
 
 
 func _run(
-	mover: MoverInterface, frames: int, input_x: float, on_floor: bool, start := Vector3.ZERO
-) -> Vector3:
+	mover: MoverInterface, frames: int, input_x: float, on_floor: bool, start := Vector2.ZERO
+) -> Vector2:
 	var velocity := start
 	for _frame in frames:
 		velocity = mover.process_movement(Vector2(input_x, 0.0), STEP, _context(velocity, on_floor))
 	return velocity
 
 
-func _jump(mover: MoverInterface, on_floor: bool) -> Vector3:
-	var context := _context(Vector3.ZERO, on_floor)
+func _jump(mover: MoverInterface, on_floor: bool) -> Vector2:
+	var context := _context(Vector2.ZERO, on_floor)
 	context.jump_pressed = true
 	return mover.process_movement(Vector2.ZERO, STEP, context)
 
 
-func _context(velocity: Vector3, on_floor: bool) -> MovementContext:
+func _context(velocity: Vector2, on_floor: bool) -> MovementContext:
 	var context := MovementContext.new()
 	context.velocity = velocity
 	context.is_on_floor = on_floor
@@ -140,7 +140,7 @@ func _context(velocity: Vector3, on_floor: bool) -> MovementContext:
 
 
 func _shoot(shooter: ShooterInterface) -> Array[Bullet]:
-	var context := ShootingContext.new(Vector3.ZERO, Vector3.RIGHT, Team.red(), self, null)
+	var context := ShootingContext.new(Vector2.ZERO, Vector2.RIGHT, Team.red(), self, null)
 	var bullets := shooter.shoot(context)
 	for bullet in bullets:
 		bullet.queue_free()

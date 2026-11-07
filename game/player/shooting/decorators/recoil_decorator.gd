@@ -1,7 +1,7 @@
 class_name RecoilDecorator
 extends ShooterDecorator
 
-const KNOCKBACK: float = 7.0
+const KNOCKBACK: float = 224.0
 
 
 func shoot(context: ShootingContext) -> Array[Bullet]:

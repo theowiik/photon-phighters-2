@@ -1,69 +1,100 @@
-[gd_scene load_steps=15 format=3 uid="uid://wilclsh64myp"]
+[gd_scene format=3 uid="uid://wilclsh64myp"]
 
 [ext_resource type="Script" uid="uid://xbop3wbqynax" path="res://player/player_body.gd" id="1_body"]
 [ext_resource type="Script" uid="uid://cphs6p6g4lci0" path="res://player/player.gd" id="2_ykyjo"]
-[ext_resource type="PackedScene" uid="uid://d3q8721w4j0h5" path="res://assets/player/body.fbx" id="3_nmc1l"]
-[ext_resource type="PackedScene" uid="uid://cslt4jk1qkwb2" path="res://assets/player/head.fbx" id="5_3rerk"]
-[ext_resource type="PackedScene" uid="uid://b8f5vhsgyt3sq" path="res://assets/player/left_hand.fbx" id="5_f46kd"]
-[ext_resource type="PackedScene" uid="uid://dwmje3i4ky7qk" path="res://assets/player/right_hand.fbx" id="6_3rerk"]
-[ext_resource type="PackedScene" uid="uid://c8gkbvg1c7564" path="res://assets/player/left_foot.fbx" id="7_i825w"]
-[ext_resource type="PackedScene" uid="uid://vfquhx8cjla5" path="res://assets/player/right_foot.fbx" id="8_3rfka"]
+[ext_resource type="Script" path="res://common/capsule.gd" id="3_capsule"]
 [ext_resource type="PackedScene" uid="uid://v38g5whwnt52" path="res://player/flashlight.tscn" id="9_i8sra"]
 [ext_resource type="AudioStream" uid="uid://cj4ksnx6aerhl" path="res://assets/sfx/player/hurt.wav" id="10_bi5m7"]
 [ext_resource type="AudioStream" uid="uid://d362oexwpvfov" path="res://assets/sfx/player/shoot.wav" id="11_shoot"]
 [ext_resource type="AudioStream" uid="uid://bjkh7bc2jbrqt" path="res://assets/sfx/player/jump.wav" id="12_jump"]
-[ext_resource type="FontFile" uid="uid://b0he2rrpenx1d" path="res://assets/fonts/cascadia_mono.ttf" id="13_font"]
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ykyjo"]
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ykyjo"]
+radius = 14.0
+height = 56.0
 
-[node name="Player" type="CharacterBody3D" groups=["players"]]
+[node name="Player" type="CharacterBody2D" groups=["players"]]
 collision_layer = 2
 collision_mask = 3
 script = ExtResource("2_ykyjo")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.54168046, 0)
-shape = SubResource("CapsuleShape3D_ykyjo")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape2D_ykyjo")
 
-[node name="Body" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5293977, 0)
+[node name="Body" type="Node2D" parent="."]
 script = ExtResource("1_body")
 
-[node name="Torso" parent="Body" instance=ExtResource("3_nmc1l")]
-transform = Transform3D(0.20044534, 0, 0.9797049, 0, 1.0000001, 0, -0.9797049, 0, 0.20044534, 0, -0.7441906, 0)
+[node name="LeftHand" type="Node2D" parent="Body"]
+position = Vector2(5, 6)
+script = ExtResource("3_capsule")
+size = Vector2(10, 8)
+outline_width = 2.0
+outline_color = Color(0.04, 0.03, 0.09, 1)
 
-[node name="LeftHand" parent="Body" instance=ExtResource("5_f46kd")]
-transform = Transform3D(0.40303996, -0.06219597, 0.91306627, -0.031394005, 0.9961608, 0.08171393, -0.91464394, -0.061598774, 0.39954, 0.012381017, -0.74512756, 0.0710659)
+[node name="LeftFoot" type="Node2D" parent="Body"]
+position = Vector2(-1, 24)
+script = ExtResource("3_capsule")
+size = Vector2(14, 8)
+outline_width = 2.0
+outline_color = Color(0.04, 0.03, 0.09, 1)
 
-[node name="Head" parent="Body" instance=ExtResource("5_3rerk")]
-transform = Transform3D(0.65841347, 0, 0.7526564, 0, 0.9999999, 0, -0.75265604, 0, 0.6584137, 0, -0.7854824, 0)
+[node name="RightFoot" type="Node2D" parent="Body"]
+position = Vector2(3, 24)
+script = ExtResource("3_capsule")
+size = Vector2(14, 8)
+outline_width = 2.0
+outline_color = Color(0.04, 0.03, 0.09, 1)
 
-[node name="RightHand" parent="Body" instance=ExtResource("6_3rerk")]
-transform = Transform3D(-0.084994696, -0.022861838, 0.9961194, -0.0019436419, 0.9997386, 0.022779074, -0.9963794, 1.0477378e-09, -0.08501695, -0.004740119, -0.7733366, -0.012747049)
+[node name="Torso" type="Node2D" parent="Body"]
+position = Vector2(0, 3)
+script = ExtResource("3_capsule")
+size = Vector2(22, 26)
+outline_width = 2.0
+outline_color = Color(0.04, 0.03, 0.09, 1)
+
+[node name="Head" type="Node2D" parent="Body"]
+position = Vector2(1, -14)
+script = ExtResource("3_capsule")
+size = Vector2(26, 24)
+outline_width = 2.0
+outline_color = Color(0.04, 0.03, 0.09, 1)
+
+[node name="BackEye" type="Node2D" parent="Body/Head"]
+position = Vector2(3.5, -2)
+script = ExtResource("3_capsule")
+size = Vector2(4, 7)
+color = Color(0.04, 0.03, 0.09, 1)
+
+[node name="FrontEye" type="Node2D" parent="Body/Head"]
+position = Vector2(9.5, -2)
+script = ExtResource("3_capsule")
+size = Vector2(4, 7)
+color = Color(0.04, 0.03, 0.09, 1)
+
+[node name="RightHand" type="Node2D" parent="Body"]
 visible = false
+position = Vector2(-5, 6)
+script = ExtResource("3_capsule")
+size = Vector2(10, 8)
+outline_width = 2.0
+outline_color = Color(0.04, 0.03, 0.09, 1)
 
-[node name="LeftFoot" parent="Body" instance=ExtResource("7_i825w")]
-transform = Transform3D(-0.046529201, -0.0092326123, 0.99887426, -0.00042959704, 0.99995738, 0.0092226123, -0.99891684, 7.3602329e-09, -0.046531184, 0.04074371, -1.0052254, 0)
+[node name="AimPivot" type="Marker2D" parent="."]
+position = Vector2(0, -2)
 
-[node name="RightFoot" parent="Body" instance=ExtResource("8_3rfka")]
-transform = Transform3D(0.4313094, 0.035527417, 0.9015043, -0.015333006, 0.9993687, -0.032048343, -0.90207378, -1.8918526e-08, 0.43158186, 0.13026446, -1.0045173, 0.06384897)
-
-[node name="AimPivot" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7618495, 0)
-
-[node name="DesiredFlashlightPosition" type="Marker3D" parent="AimPivot"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.12713635, 0, 0)
+[node name="DesiredFlashlightPosition" type="Marker2D" parent="AimPivot"]
+position = Vector2(8, 0)
 
 [node name="Flashlight" parent="." instance=ExtResource("9_i8sra")]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 1.812, 0.762, 0)
+position = Vector2(8, -2)
 
-[node name="HealthLabel" type="Label3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3, 0)
-billboard = 1
-text = "P1 ██████████"
-font = ExtResource("13_font")
-font_size = 64
-outline_size = 16
+[node name="HealthLabel" type="Label" parent="."]
+offset_left = -60.0
+offset_top = -54.0
+offset_right = 60.0
+offset_bottom = -36.0
+theme_type_variation = &"Mono"
+text = "██████████"
+horizontal_alignment = 1
 
 [node name="HurtPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("10_bi5m7")

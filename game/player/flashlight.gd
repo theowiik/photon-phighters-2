@@ -1,23 +1,19 @@
 class_name Flashlight
-extends RigidBody3D
+extends RigidBody2D
 
 const SPRING_FORCE: float = 300.0
 const DAMPING: float = 10.0
-const ROTATION_SPEED: float = 90.0
-const KICK_STRENGTH: float = 2.5
-const FLASH_ENERGY: float = 8.0
-const FLASH_SECONDS: float = 0.1
-const MAX_TARGET_DISTANCE: float = 1.5
+const KICK_STRENGTH: float = 80.0
+const MAX_TARGET_DISTANCE: float = 48.0
 
-var target_position: Node3D = null
-var aim_origin: Node3D = null
-var _last_target_position: Vector3
+var target_position: Node2D = null
+var aim_origin: Node2D = null
+var _last_target_position: Vector2
 
-@onready var visuals: Node3D = $Visuals
-@onready var hand_mesh: MeshInstance3D = $Visuals/HandOnly/flashlight_hand
-@onready var shoot_position: Node3D = $ShootPosition
-@onready var spot_light: SpotLight3D = $Visuals/SpotLight3D
-@onready var base_light_energy: float = spot_light.light_energy
+@onready var visuals: Node2D = $Visuals
+@onready var lens: Capsule = $Visuals/Lens
+@onready var hand: Capsule = $Visuals/Hand
+@onready var shoot_position: Node2D = $ShootPosition
 
 
 func _ready() -> void:
@@ -27,18 +23,12 @@ func _ready() -> void:
 
 
 func set_color(color: Color) -> void:
-	var source := hand_mesh.get_active_material(0) as BaseMaterial3D
-	if source:
-		var material := source.duplicate() as BaseMaterial3D
-		material.albedo_color = color
-		hand_mesh.set_surface_override_material(0, material)
-	spot_light.light_color = color
+	hand.color = color
+	lens.color = color
 
 
-func kick(direction: Vector3) -> void:
+func kick(direction: Vector2) -> void:
 	apply_central_impulse(-direction * KICK_STRENGTH)
-	spot_light.light_energy = FLASH_ENERGY
-	create_tween().tween_property(spot_light, "light_energy", base_light_energy, FLASH_SECONDS)
 
 
 func _physics_process(delta: float) -> void:
@@ -46,7 +36,7 @@ func _physics_process(delta: float) -> void:
 		return
 
 	_move_towards_target_position(delta)
-	_rotate_towards_target(delta)
+	_rotate_towards_target()
 
 
 func _move_towards_target_position(delta: float) -> void:
@@ -56,13 +46,12 @@ func _move_towards_target_position(delta: float) -> void:
 	var displacement := target - global_position
 	if displacement.length() > MAX_TARGET_DISTANCE:
 		global_position = target
-		linear_velocity = Vector3.ZERO
+		linear_velocity = Vector2.ZERO
 		return
 	apply_central_force(displacement * SPRING_FORCE - (linear_velocity - target_velocity) * DAMPING)
 
 
-func _rotate_towards_target(delta: float) -> void:
-	var aim_direction := (target_position.global_position - aim_origin.global_position).normalized()
-	var up_vector := Vector3.DOWN if aim_direction.x < 0 else Vector3.UP
-	var target_basis := Basis.looking_at(aim_direction, up_vector)
-	global_transform.basis = global_transform.basis.slerp(target_basis, ROTATION_SPEED * delta)
+func _rotate_towards_target() -> void:
+	var aim_direction := target_position.global_position - aim_origin.global_position
+	rotation = aim_direction.angle()
+	visuals.scale.y = -1.0 if aim_direction.x < 0.0 else 1.0

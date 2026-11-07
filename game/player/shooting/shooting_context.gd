@@ -3,8 +3,8 @@ extends RefCounted
 
 ## Spread angle in degrees
 var spread: float = 15.0
-var from_position: Vector3
-var direction: Vector3
+var from_position: Vector2
+var direction: Vector2
 var team: Team
 var parent: Node
 var player: Player
@@ -13,8 +13,8 @@ var extra_shots: int = 0
 
 
 func _init(
-	shot_from: Vector3,
-	shot_direction: Vector3,
+	shot_from: Vector2,
+	shot_direction: Vector2,
 	shooter_team: Team,
 	bullet_parent: Node,
 	shooter: Player

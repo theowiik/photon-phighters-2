@@ -1,89 +1,29 @@
-[gd_scene load_steps=15 format=3 uid="uid://ovaec6nc7m42"]
+[gd_scene format=3 uid="uid://ovaec6nc7m42"]
 
 [ext_resource type="PackedScene" uid="uid://wilclsh64myp" path="res://player/player.tscn" id="1_o5qli"]
 [ext_resource type="Script" uid="uid://cbldusqpmy3gb" path="res://main/main.gd" id="1_tefeu"]
 [ext_resource type="Script" uid="uid://d0f1w2mq5h6r7" path="res://main/follow_camera.gd" id="2_0wfyh"]
 [ext_resource type="PackedScene" uid="uid://bk4k7em2j8d1p" path="res://main/round_manager.tscn" id="2_o6xl0"]
 [ext_resource type="PackedScene" uid="uid://dacw2gn4smkwj" path="res://hud/hud.tscn" id="5_tbgi4"]
-[ext_resource type="PackedScene" uid="uid://bioo4dk8jqu1w" path="res://lasers/laser_machine.tscn" id="8_tipki"]
-[ext_resource type="PackedScene" uid="uid://ymkakny8f3x5" path="res://lasers/strobe_machine.tscn" id="9_85g3d"]
-[ext_resource type="PackedScene" uid="uid://bnrvj0df4mrer" path="res://maps/tank_mayhem.tscn" id="10_choun"]
-[ext_resource type="Shader" path="res://main/sky.gdshader" id="11_sky"]
-[ext_resource type="Shader" path="res://main/post_process.gdshader" id="12_post"]
+[ext_resource type="PackedScene" uid="uid://pwcxejyz3cem9" path="res://maps/map_template.tscn" id="10_choun"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_sky"]
-shader = ExtResource("11_sky")
-
-[sub_resource type="Sky" id="Sky_main"]
-sky_material = SubResource("ShaderMaterial_sky")
-
-[sub_resource type="Environment" id="Environment_tbgi4"]
-background_mode = 2
-sky = SubResource("Sky_main")
-ambient_light_source = 2
-ambient_light_color = Color(0.32, 0.36, 0.6, 1)
-ambient_light_energy = 0.35
-tonemap_mode = 3
-ssr_enabled = true
-ssao_enabled = true
-glow_enabled = true
-glow_intensity = 1.0
-glow_bloom = 0.08
-glow_hdr_threshold = 0.9
-volumetric_fog_enabled = true
-volumetric_fog_density = 0.006
-volumetric_fog_albedo = Color(0.55, 0.6, 0.9, 1)
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_post"]
-shader = ExtResource("12_post")
-
-[node name="Main" type="Node3D"]
+[node name="Main" type="Node2D"]
 script = ExtResource("1_tefeu")
 map_scene = ExtResource("10_choun")
 
 [node name="RoundManager" parent="." instance=ExtResource("2_o6xl0")]
 
 [node name="Player1" parent="." instance=ExtResource("1_o5qli")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 1.5, 0)
-
-[node name="Camera3D" type="Camera3D" parent="."]
-process_mode = 3
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.650961, 13.587667, 30.053001)
-fov = 22.5
-size = 10.69
-script = ExtResource("2_0wfyh")
-
-[node name="SpotLight3D" type="SpotLight3D" parent="."]
-transform = Transform3D(0.7745472, -0.6064626, 0.17966545, 0, 0.28404883, 0.9588098, -0.6325161, -0.7426435, 0.22000922, 1.946548, 3.4297528, 1.2746582)
-
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.33293483, 0.94294983, 0, -0.9429499, 0.33293483, 0, 6.098803, 9.444128)
-light_color = Color(0.62, 0.7, 1, 1)
-light_energy = 0.7
-
-[node name="PostProcess" type="ColorRect" parent="."]
-material = SubResource("ShaderMaterial_post")
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="HUD" parent="." instance=ExtResource("5_tbgi4")]
+position = Vector2(-512, 40)
 
 [node name="Player2" parent="." instance=ExtResource("1_o5qli")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 0.5, 0)
+position = Vector2(704, 40)
 display_name = "P2"
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Environment_tbgi4")
+[node name="Camera2D" type="Camera2D" parent="."]
+process_mode = 3
+script = ExtResource("2_0wfyh")
 
-[node name="StrobeMachine" parent="." instance=ExtResource("9_85g3d")]
-transform = Transform3D(-0.89394367, -0.41331005, 0.17331912, -0.39152706, 0.90838337, 0.1467852, -0.21810812, 0.063358426, -0.9738655, -6.775606, 4.786051, -9.15583)
+[node name="UI" type="CanvasLayer" parent="."]
 
-[node name="LaserMachine" parent="." instance=ExtResource("8_tipki")]
-transform = Transform3D(0.9967859, 0.038582593, -0.07021205, -0.0665421, -0.08933601, -0.9937761, -0.044614714, 0.9952539, -0.08648137, 13.597982, -8.108994, -8.517785)
-
-[node name="LaserMachine2" parent="." instance=ExtResource("8_tipki")]
-transform = Transform3D(0.9847502, -0.16756727, -0.04677963, -0.032507997, 0.08692348, -0.99568444, 0.17091039, 0.9820211, 0.080150336, -4.491232, -9.77479, -8.517785)
+[node name="HUD" parent="UI" instance=ExtResource("5_tbgi4")]

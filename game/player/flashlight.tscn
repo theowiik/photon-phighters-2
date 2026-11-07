@@ -1,30 +1,40 @@
-[gd_scene load_steps=5 format=3 uid="uid://v38g5whwnt52"]
+[gd_scene format=3 uid="uid://v38g5whwnt52"]
 
 [ext_resource type="Script" uid="uid://bpme3thc2gylf" path="res://player/flashlight.gd" id="1_h1fso"]
-[ext_resource type="PackedScene" uid="uid://c7tevucxnacfx" path="res://player/flashlight_only.tscn" id="3_wcc41"]
-[ext_resource type="PackedScene" uid="uid://blc5ishx88q0k" path="res://player/hand_only.tscn" id="4_r5ew8"]
+[ext_resource type="Script" path="res://common/capsule.gd" id="2_capsule"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_dqtkv"]
-size = Vector3(0.5827637, 0.5626068, 1.252243)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dqtkv"]
+size = Vector2(28, 12)
 
-[node name="Flashlight" type="RigidBody3D"]
+[node name="Flashlight" type="RigidBody2D"]
 collision_layer = 4
 script = ExtResource("1_h1fso")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.010620117, 0.045021057, -0.2022171)
-shape = SubResource("BoxShape3D_dqtkv")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(9, 0)
+shape = SubResource("RectangleShape2D_dqtkv")
 
-[node name="ShootPosition" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.0954229)
+[node name="ShootPosition" type="Marker2D" parent="."]
+position = Vector2(26, 0)
 
-[node name="Visuals" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0928963, 0, 0)
+[node name="Visuals" type="Node2D" parent="."]
 
-[node name="FlashlightOnly" parent="Visuals" instance=ExtResource("3_wcc41")]
+[node name="Barrel" type="Polygon2D" parent="Visuals"]
+color = Color(0.36, 0.38, 0.5, 1)
+polygon = PackedVector2Array(-5, -3.5, 16, -3.5, 16, 3.5, -5, 3.5)
 
-[node name="HandOnly" parent="Visuals" instance=ExtResource("4_r5ew8")]
-transform = Transform3D(-1, 8.742278e-08, 0, -8.742278e-08, -1, 0, 0, 0, 1, 0, 0, 0)
+[node name="Head" type="Polygon2D" parent="Visuals"]
+color = Color(0.55, 0.58, 0.7, 1)
+polygon = PackedVector2Array(16, -3.5, 23, -6, 23, 6, 16, 3.5)
 
-[node name="SpotLight3D" type="SpotLight3D" parent="Visuals"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.821754)
+[node name="Lens" type="Node2D" parent="Visuals"]
+position = Vector2(23.5, 0)
+script = ExtResource("2_capsule")
+size = Vector2(3, 11)
+
+[node name="Hand" type="Node2D" parent="Visuals"]
+position = Vector2(1, 1)
+script = ExtResource("2_capsule")
+size = Vector2(10, 8)
+outline_width = 2.0
+outline_color = Color(0.04, 0.03, 0.09, 1)

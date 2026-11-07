@@ -54,7 +54,12 @@ dev_zoom_out={
 
 [layer_names]
 
-3d_physics/layer_1="platforms"
-3d_physics/layer_2="players"
-3d_physics/layer_3="flashlights"
-3d_physics/layer_4="bullets"
+2d_physics/layer_1="platforms"
+2d_physics/layer_2="players"
+2d_physics/layer_3="flashlights"
+2d_physics/layer_4="bullets"
+
+[rendering]
+
+anti_aliasing/quality/msaa_2d=2
+environment/defaults/default_clear_color=Color(0.04, 0.035, 0.1, 1)
