@@ -9,6 +9,7 @@ const RESPAWN_DELAY: float = 1.5
 const SPAWN_PROTECTION: float = 1.0
 const HEALTH_BAR_SEGMENTS: int = 10
 const PROTECTION_BLINK_SECONDS: float = 0.08
+const KNOCK_OUT_BURST_SCENE: PackedScene = preload("res://player/knock_out_burst.tscn")
 
 @export var display_name: String = "P1"
 
@@ -144,10 +145,18 @@ func knock_out() -> void:
 
 	is_knocked_out = true
 	knocked_out.emit()
+	_spawn_knock_out_burst()
 	visible = false
 	collision_shape.set_deferred("disabled", true)
 	set_deferred("global_position", spawn_position)
 	respawn_time_remaining = RESPAWN_DELAY
+
+
+func _spawn_knock_out_burst() -> void:
+	var burst: ParticleBurst = KNOCK_OUT_BURST_SCENE.instantiate()
+	burst.color = team.color
+	get_parent().add_child(burst)
+	burst.global_position = global_position
 
 
 func respawn() -> void:

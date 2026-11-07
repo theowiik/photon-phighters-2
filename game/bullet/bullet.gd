@@ -2,6 +2,7 @@ class_name Bullet
 extends Area3D
 
 const BULB_SCENE: PackedScene = preload("res://bulb/bulb.tscn")
+const HIT_BURST_SCENE: PackedScene = preload("res://player/hit_burst.tscn")
 const BULB_MERGE_RADIUS: float = 0.75
 const GRAVITY: float = 90.0
 const WOBBLE_FREQUENCY: float = 12.0
@@ -75,10 +76,19 @@ func _handle_hit(body: Node3D) -> void:
 	if body is Player:
 		body.take_damage(damage)
 		body.apply_impulse(velocity.normalized() * HIT_KNOCKBACK)
+		_spawn_hit_burst()
 	else:
 		_paint()
 
 	queue_free()
+
+
+func _spawn_hit_burst() -> void:
+	var burst: ParticleBurst = HIT_BURST_SCENE.instantiate()
+	burst.color = team.color
+	burst.direction = velocity.normalized()
+	get_tree().current_scene.add_child(burst)
+	burst.global_position = global_position
 
 
 func _paint() -> void:
