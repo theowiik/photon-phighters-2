@@ -32,7 +32,6 @@ var animation_manager: AnimationManager
 @onready var aim_pivot: Node3D = $AimPivot
 @onready var collision_shape: CollisionShape3D = $CollisionShape3D
 @onready var flashlight: Flashlight = $Flashlight
-@onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var body: PlayerBody = $Body
 @onready var health_label: Label3D = $HealthLabel
 @onready var hurt_player: AudioStreamPlayer = $HurtPlayer
@@ -50,7 +49,7 @@ func _ready() -> void:
 	base_shooter = BaseShooter.new()
 	shooter = base_shooter
 
-	animation_manager = AnimationManager.new(animation_player, body)
+	animation_manager = AnimationManager.new(body)
 	flashlight.target_position = $AimPivot/DesiredFlashlightPosition
 	flashlight.aim_origin = aim_pivot
 
@@ -115,7 +114,9 @@ func _process_movement(delta: float) -> void:
 	global_position.z = locked_z
 	velocity.z = 0
 
-	animation_manager.update(velocity, is_on_floor(), is_on_wall(), get_wall_normal())
+	animation_manager.update(
+		delta, velocity, is_on_floor(), is_on_wall(), get_wall_normal(), aim_pivot.rotation.z
+	)
 
 
 func is_bot() -> bool:

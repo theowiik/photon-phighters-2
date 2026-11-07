@@ -70,6 +70,7 @@ validation where data enters the game (files, network, user input).
     ├── assets/        # Imported assets (models, fonts, maps, sounds)
     ├── main/          # Main scene, round manager and camera
     ├── maps/          # One scene per map: model, spawn points and out-of-bounds area
+    │   └── pieces/    # Primitive map pieces (box, platform, wall, ramp, cylinder)
     ├── player/        # Player scene, flashlight, input, movement and shooting
     ├── crystals/      # Crystal registry and the crystal picker
     ├── hud/           # HUD and dev console
@@ -137,7 +138,15 @@ Actions) runs `mise run check` and `mise run test` on all three systems and
 1. Create a decorator in `player/movement/decorators/` or `player/shooting/decorators/`
    that extends `MoverDecorator` or `ShooterDecorator` and declares a `class_name`.
 1. Register it in the matching dictionary in `crystals/crystal_registry.gd` and add a
-   line to `DESCRIPTIONS` there.
+   line to `DESCRIPTIONS` and its effects to `EFFECTS` there.
+
+### Building a map
+
+1. Duplicate `maps/map_template.tscn` and rename the root node to match the file.
+1. Drag pieces from `maps/pieces/` into `Geometry`. Resize them with `size` in the
+   Inspector, not with the scale gizmo, so collision matches the mesh.
+1. Move the `Spawns` markers and the `OutOfBounds` area, then set the scene as
+   `map_scene` on `Main`.
 
 ## Conventions
 

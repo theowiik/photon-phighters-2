@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://r2yd1pp1xldka"]
+
+[ext_resource type="Script" uid="uid://25t8oqrvovac" path="res://maps/pieces/map_piece.gd" id="1_piece"]
+
+[node name="Platform" type="StaticBody3D"]
+script = ExtResource("1_piece")
+size = Vector3(8, 0.5, 4)

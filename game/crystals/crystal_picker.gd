@@ -3,6 +3,12 @@ extends Control
 
 signal crystal_picked(crystal_name: String)
 
+const BUFF_COLOR: Color = Color("7ee787")
+const DRAWBACK_COLOR: Color = Color("ff6b6b")
+const NEUTRAL_COLOR: Color = Color("ffb35c")
+const DESCRIPTION_COLOR: Color = Color(1, 1, 1, 0.6)
+const BUTTON_PADDING: float = 20.0
+
 var crystal_button_scene: PackedScene = preload("res://crystals/crystal_button.tscn")
 var picking_player: Player
 var has_picked: bool = false
@@ -20,11 +26,11 @@ func show_choices(loser: Player, choices: Array[String]) -> void:
 	title.add_theme_color_override("font_color", loser.team.color)
 	for crystal_name in choices:
 		var button: Button = crystal_button_scene.instantiate()
-		button.text = (
-			"%s\n%s" % [crystal_name.capitalize(), CrystalRegistry.get_description(crystal_name)]
-		)
 		button.disabled = loser.is_bot()
 		buttons.add_child(button)
+		var label: RichTextLabel = button.get_node("Label")
+		label.text = _crystal_text(crystal_name)
+		button.custom_minimum_size.y = label.get_content_height() + BUTTON_PADDING
 		button.pressed.connect(_on_crystal_button_pressed.bind(crystal_name))
 
 	for index in buttons.get_child_count():
@@ -46,6 +52,28 @@ func show_choices(loser: Player, choices: Array[String]) -> void:
 			hint.text = "D-pad to move · A to pick"
 		else:
 			hint.text = "Click, or ↑ ↓ and Enter"
+
+
+func _crystal_text(crystal_name: String) -> String:
+	var lines: Array[String] = [
+		crystal_name.capitalize(),
+		_colored(CrystalRegistry.get_description(crystal_name), DESCRIPTION_COLOR),
+	]
+	for effect: String in CrystalRegistry.get_effects(crystal_name):
+		lines.append(_colored(effect, _effect_color(effect)))
+	return "\n".join(lines)
+
+
+func _effect_color(effect: String) -> Color:
+	if effect.begins_with("+"):
+		return BUFF_COLOR
+	if effect.begins_with("-"):
+		return DRAWBACK_COLOR
+	return NEUTRAL_COLOR
+
+
+func _colored(text: String, color: Color) -> String:
+	return "[color=#%s]%s[/color]" % [color.to_html(), text]
 
 
 func _input(event: InputEvent) -> void:

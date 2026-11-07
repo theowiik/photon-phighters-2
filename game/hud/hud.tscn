@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://dacw2gn4smkwj"]
+[gd_scene load_steps=3 format=3 uid="uid://dacw2gn4smkwj"]
 
 [ext_resource type="Script" uid="uid://fspuivr1mf8v" path="res://hud/hud.gd" id="1_ahhtf"]
+[ext_resource type="Script" path="res://hud/performance_panel.gd" id="2_perf"]
 
 [node name="HUD" type="Control"]
 process_mode = 3
@@ -169,5 +170,36 @@ scroll_following = true
 [node name="ConsoleLineEdit" type="LineEdit" parent="Console/Content"]
 layout_mode = 2
 placeholder_text = "/help"
+
+[node name="Performance" type="PanelContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -560.0
+offset_top = 12.0
+offset_right = -12.0
+grow_horizontal = 0
+mouse_filter = 2
+script = ExtResource("2_perf")
+
+[node name="Content" type="VBoxContainer" parent="Performance"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Title" type="Label" parent="Performance/Content"]
+layout_mode = 2
+theme_type_variation = &"Subtle"
+text = "Performance · F3 to close"
+
+[node name="Stats" type="Label" parent="Performance/Content"]
+layout_mode = 2
+theme_type_variation = &"Mono"
+
+[node name="Graph" type="Control" parent="Performance/Content"]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+mouse_filter = 2
 
 [connection signal="text_submitted" from="Console/Content/ConsoleLineEdit" to="." method="_on_console_line_edit_text_submitted"]
