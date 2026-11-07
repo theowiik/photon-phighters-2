@@ -19,7 +19,8 @@ var _hit: bool = false
 
 @onready var mesh_instance: MeshInstance3D = $MeshInstance3D
 @onready var light: OmniLight3D = $OmniLight3D
-@onready var _ray_query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.new()
+@onready var collision_shape: CollisionShape3D = $CollisionShape3D
+@onready var _shape_query: PhysicsShapeQueryParameters3D = PhysicsShapeQueryParameters3D.new()
 
 
 func _ready() -> void:
@@ -31,11 +32,10 @@ func _ready() -> void:
 	mesh_instance.material_override = _material
 	light.light_color = team.color
 
-	_ray_query.collision_mask = collision_mask
-	_ray_query.collide_with_areas = false
-	_ray_query.collide_with_bodies = true
+	_shape_query.shape = collision_shape.shape
+	_shape_query.collision_mask = collision_mask
 	if shooter:
-		_ray_query.exclude = [shooter.get_rid()]
+		_shape_query.exclude = [shooter.get_rid()]
 
 
 func _physics_process(delta: float) -> void:
@@ -44,17 +44,21 @@ func _physics_process(delta: float) -> void:
 	var movement: Vector3 = velocity * delta + _wobble_offset(delta)
 	_align_to(movement)
 
-	_ray_query.from = global_position
-	_ray_query.to = global_position + movement
+	_shape_query.transform = global_transform
+	_shape_query.motion = movement
 
 	var space_state := get_world_3d().direct_space_state
-	var result := space_state.intersect_ray(_ray_query)
-
-	if result:
-		global_position = result.position
-		_handle_hit(result.collider)
-	else:
+	var hit_fraction: float = space_state.cast_motion(_shape_query)[1]
+	if hit_fraction >= 1.0:
 		position += movement
+		return
+
+	_shape_query.transform.origin += movement * hit_fraction
+	_shape_query.motion = Vector3.ZERO
+	var contact := space_state.get_rest_info(_shape_query)
+	if contact:
+		global_position = contact.point
+		_handle_hit(instance_from_id(contact.collider_id))
 
 
 func _align_to(direction: Vector3) -> void:
