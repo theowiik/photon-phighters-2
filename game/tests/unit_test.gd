@@ -108,6 +108,7 @@ func _test_shooting() -> void:
 func _test_crystal_registry() -> void:
 	for crystal in CrystalRegistry.get_all_crystals():
 		_expect(not CrystalRegistry.get_description(crystal).is_empty())
+		_expect(not CrystalRegistry.get_effects(crystal).is_empty())
 	for crystal: String in CrystalRegistry.movement_crystals:
 		var mover := CrystalRegistry.create_movement_decorator(crystal, BaseMover.new())
 		_expect(mover is MoverDecorator)

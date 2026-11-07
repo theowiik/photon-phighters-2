@@ -11,8 +11,8 @@ const FALL_GRAVITY_MULTIPLIER: float = 1.5
 const RELEASED_JUMP_GRAVITY_MULTIPLIER: float = 2.5
 const MAX_FALL_SPEED: float = 24.0
 const WALL_SLIDE_SPEED: float = 3.5
-const WALL_JUMP_VELOCITY: float = 14.5
-const WALL_JUMP_PUSH: float = 12.0
+const WALL_JUMP_VELOCITY: float = 16.0
+const WALL_JUMP_PUSH: float = 6.0
 const COYOTE_TIME: float = 0.1
 const JUMP_BUFFER_TIME: float = 0.12
 

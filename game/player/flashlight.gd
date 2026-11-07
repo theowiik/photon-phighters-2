@@ -7,9 +7,11 @@ const ROTATION_SPEED: float = 90.0
 const KICK_STRENGTH: float = 2.5
 const FLASH_ENERGY: float = 8.0
 const FLASH_SECONDS: float = 0.1
+const MAX_TARGET_DISTANCE: float = 1.5
 
 var target_position: Node3D = null
 var aim_origin: Node3D = null
+var _last_target_position: Vector3
 
 @onready var visuals: Node3D = $Visuals
 @onready var hand_mesh: MeshInstance3D = $Visuals/HandOnly/flashlight_hand
@@ -43,13 +45,20 @@ func _physics_process(delta: float) -> void:
 	if target_position == null or aim_origin == null:
 		return
 
-	_move_towards_target_position()
+	_move_towards_target_position(delta)
 	_rotate_towards_target(delta)
 
 
-func _move_towards_target_position() -> void:
-	var displacement := target_position.global_position - global_position
-	apply_central_force(displacement * SPRING_FORCE - linear_velocity * DAMPING)
+func _move_towards_target_position(delta: float) -> void:
+	var target := target_position.global_position
+	var target_velocity := (target - _last_target_position) / delta
+	_last_target_position = target
+	var displacement := target - global_position
+	if displacement.length() > MAX_TARGET_DISTANCE:
+		global_position = target
+		linear_velocity = Vector3.ZERO
+		return
+	apply_central_force(displacement * SPRING_FORCE - (linear_velocity - target_velocity) * DAMPING)
 
 
 func _rotate_towards_target(delta: float) -> void:

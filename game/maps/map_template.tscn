@@ -1,0 +1,61 @@
+[gd_scene format=3 uid="uid://pwcxejyz3cem9"]
+
+[ext_resource type="PackedScene" uid="uid://n2x0ne9xstwkp" path="res://maps/pieces/box.tscn" id="1_box"]
+[ext_resource type="PackedScene" uid="uid://r2yd1pp1xldka" path="res://maps/pieces/platform.tscn" id="2_platform"]
+[ext_resource type="PackedScene" uid="uid://k1qxrvf9v93tb" path="res://maps/pieces/wall.tscn" id="3_wall"]
+[ext_resource type="PackedScene" uid="uid://guwgikioz6te4" path="res://maps/pieces/ramp.tscn" id="4_ramp"]
+[ext_resource type="PackedScene" uid="uid://xfj5sbq4fklcl" path="res://maps/pieces/cylinder.tscn" id="5_cylinder"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ob"]
+size = Vector3(137.51, 3.445, 18.475)
+
+[node name="MapTemplate" type="Node3D"]
+
+[node name="Geometry" type="Node3D" parent="."]
+
+[node name="Floor" parent="Geometry" instance=ExtResource("1_box")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3, 0)
+size = Vector3(72, 1, 6)
+
+[node name="LeftWall" parent="Geometry" instance=ExtResource("3_wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -36.5, 2, 0)
+size = Vector3(1, 10, 6)
+
+[node name="RightWall" parent="Geometry" instance=ExtResource("3_wall")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 36.5, 2, 0)
+size = Vector3(1, 10, 6)
+
+[node name="LeftRamp" parent="Geometry" instance=ExtResource("4_ramp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -34, -1.5, 0)
+size = Vector3(4, 2, 6)
+
+[node name="RightRamp" parent="Geometry" instance=ExtResource("4_ramp")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 34, -1.5, 0)
+size = Vector3(4, 2, 6)
+
+[node name="LeftPlatform" parent="Geometry" instance=ExtResource("2_platform")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 0, 0)
+
+[node name="RightPlatform" parent="Geometry" instance=ExtResource("2_platform")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 0)
+
+[node name="CenterLog" parent="Geometry" instance=ExtResource("5_cylinder")]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 2, 0)
+size = Vector3(2.5, 6, 2.5)
+color = Color(0.48, 0.38, 0.62, 1)
+
+[node name="Spawns" type="Node3D" parent="."]
+
+[node name="Spawn1" type="Marker3D" parent="Spawns"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, -1.5, 0)
+
+[node name="Spawn2" type="Marker3D" parent="Spawns"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, -1.5, 0)
+
+[node name="OutOfBounds" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -15, 0)
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="OutOfBounds"]
+shape = SubResource("BoxShape3D_ob")

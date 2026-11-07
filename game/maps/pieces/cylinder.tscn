@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://xfj5sbq4fklcl"]
+
+[ext_resource type="Script" uid="uid://25t8oqrvovac" path="res://maps/pieces/map_piece.gd" id="1_piece"]
+
+[node name="Cylinder" type="StaticBody3D"]
+script = ExtResource("1_piece")
+shape = 2
+size = Vector3(2, 4, 2)

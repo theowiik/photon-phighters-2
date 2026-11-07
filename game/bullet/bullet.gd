@@ -39,26 +39,41 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if _age == 0.0 and shooter and _sweep_barrel():
+		return
+
 	_age += delta
 	velocity.y -= GRAVITY * delta
 	var movement: Vector3 = velocity * delta + _wobble_offset(delta)
 	_align_to(movement)
+	if not _sweep(global_position, movement):
+		position += movement
 
-	_shape_query.transform = global_transform
-	_shape_query.motion = movement
+
+## Sweeps from the shooter's aim pivot to the muzzle, so targets and walls closer than the
+## muzzle are hit instead of skipped.
+func _sweep_barrel() -> bool:
+	var pivot := shooter.aim_pivot.global_position
+	return _sweep(pivot, global_position - pivot)
+
+
+## Returns true when the sweep was stopped, after handling any hit.
+func _sweep(from: Vector3, motion: Vector3) -> bool:
+	_shape_query.transform = Transform3D(global_basis, from)
+	_shape_query.motion = motion
 
 	var space_state := get_world_3d().direct_space_state
 	var hit_fraction: float = space_state.cast_motion(_shape_query)[1]
 	if hit_fraction >= 1.0:
-		position += movement
-		return
+		return false
 
-	_shape_query.transform.origin += movement * hit_fraction
+	_shape_query.transform.origin += motion * hit_fraction
 	_shape_query.motion = Vector3.ZERO
 	var contact := space_state.get_rest_info(_shape_query)
 	if contact:
 		global_position = contact.point
 		_handle_hit(instance_from_id(contact.collider_id))
+	return true
 
 
 func _align_to(direction: Vector3) -> void:
