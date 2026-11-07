@@ -4,14 +4,13 @@ extends InputInterface
 const WANDER_CHANCE: float = 0.02
 const WANDER_DURATION: float = 0.5
 const RETARGET_INTERVAL: float = 0.25
-const TARGET_RANGE: float = 10.0
+const TARGET_RANGE: float = 320.0
 const JUMP_INTERVAL: float = 0.8
 const JUMP_HOLD_TIME: float = 0.3
 
 var player_node: Player
-var current_target: Node3D = null
+var current_target: Node2D = null
 var retarget_timer: float = 0.25
-var camera: Camera3D = null
 
 var wander_timer: float = 0.0
 var wander_direction: Vector2 = Vector2.LEFT
@@ -28,7 +27,6 @@ func _init(p_player_node: Player) -> void:
 
 
 func update() -> void:
-	_update_camera()
 	_update_target()
 
 	_movement = _compute_movement()
@@ -52,7 +50,7 @@ func _compute_movement() -> Vector2:
 		return wander_direction
 
 	var distance_x: float = current_target.global_position.x - player_node.global_position.x
-	if absf(distance_x) > 2.0:
+	if absf(distance_x) > 64.0:
 		return Vector2(signf(distance_x), 0.0)
 
 	return wander_direction
@@ -66,31 +64,20 @@ func _update_jump() -> void:
 
 	var target_above: bool = (
 		is_instance_valid(current_target)
-		and current_target.global_position.y > player_node.global_position.y + 1.0
+		and current_target.global_position.y < player_node.global_position.y - 32.0
 	)
 	if player_node.is_on_wall() or (player_node.is_on_floor() and target_above):
 		_jump_just_pressed = true
 		jump_timer = JUMP_INTERVAL
 
 
-func _update_camera() -> void:
-	if not is_instance_valid(camera):
-		camera = player_node.get_viewport().get_camera_3d()
-
-
 func _compute_aim_direction() -> Vector2:
-	if camera == null or not is_instance_valid(current_target):
+	if not is_instance_valid(current_target):
 		return Vector2(_movement.x, 0.8).normalized()
 	if player_node.global_position.distance_to(current_target.global_position) > TARGET_RANGE:
 		return Vector2(_movement.x, 0.8).normalized()
 
-	var player_screen_pos: Vector2 = camera.unproject_position(
-		player_node.aim_pivot.global_position
-	)
-	var target_screen_pos: Vector2 = camera.unproject_position(current_target.global_position)
-	var direction: Vector2 = (target_screen_pos - player_screen_pos).normalized()
-
-	return direction
+	return (current_target.global_position - player_node.aim_pivot.global_position).normalized()
 
 
 func _update_target() -> void:

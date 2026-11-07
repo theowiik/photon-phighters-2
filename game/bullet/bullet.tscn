@@ -1,34 +1,31 @@
-[gd_scene load_steps=5 format=3 uid="uid://drbs6sofuivrm"]
+[gd_scene format=3 uid="uid://drbs6sofuivrm"]
 
-[ext_resource type="Texture2D" uid="uid://co5yey2y7yboh" path="res://assets/icon.svg" id="1_1hbe6"]
 [ext_resource type="Script" uid="uid://d00uqlh5tao8s" path="res://bullet/bullet.gd" id="1_script"]
+[ext_resource type="Script" path="res://common/capsule.gd" id="2_capsule"]
+[ext_resource type="Texture2D" path="res://common/soft_light.tres" id="3_light"]
 
-[sub_resource type="CapsuleMesh" id="SphereMesh_3ndsa"]
-radius = 0.06
-height = 0.5
+[sub_resource type="CircleShape2D" id="CircleShape2D_3ndsa"]
+radius = 3.4
 
-[sub_resource type="SphereShape3D" id="SphereShape3D_3ndsa"]
-radius = 0.10501297
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_light"]
+blend_mode = 1
 
-[node name="Bullet" type="Area3D" groups=["bullets"]]
+[node name="Bullet" type="Area2D" groups=["bullets"]]
 collision_layer = 8
 collision_mask = 3
 script = ExtResource("1_script")
 
-[node name="Sprite3D" type="Sprite3D" parent="."]
-transform = Transform3D(0.325, 0, 0, 0, 0.325, 0, 0, 0, 0.325, 0, 0, 0)
-visible = false
-texture = ExtResource("1_1hbe6")
+[node name="Light" type="Sprite2D" parent="."]
+material = SubResource("CanvasItemMaterial_light")
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("3_light")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-mesh = SubResource("SphereMesh_3ndsa")
+[node name="Core" type="Node2D" parent="."]
+script = ExtResource("2_capsule")
+size = Vector2(16, 4)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-shape = SubResource("SphereShape3D_3ndsa")
-
-[node name="OmniLight3D" type="OmniLight3D" parent="."]
-light_energy = 1.5
-omni_range = 3.0
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_3ndsa")
 
 [node name="LifeTimer" type="Timer" parent="."]
 wait_time = 3.0

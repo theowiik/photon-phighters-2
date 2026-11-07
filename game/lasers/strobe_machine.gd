@@ -1,10 +1,10 @@
 class_name StrobeMachine
-extends Node3D
+extends Node2D
 
 var on: bool = false
 var strobe_speed: float = 10.0
 
-@onready var light: SpotLight3D = $SpotLight3D
+@onready var light: Sprite2D = $Light
 
 
 func _process(_delta: float) -> void:

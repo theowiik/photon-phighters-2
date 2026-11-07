@@ -1,5 +1,5 @@
 class_name RoundManager
-extends Node3D
+extends Node
 
 signal round_finished(winner: Player, loser: Player)
 signal time_updated(time_remaining: float)

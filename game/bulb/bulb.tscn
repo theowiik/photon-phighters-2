@@ -1,25 +1,30 @@
-[gd_scene load_steps=4 format=3 uid="uid://c6ooswcottct1"]
+[gd_scene format=3 uid="uid://c6ooswcottct1"]
 
 [ext_resource type="Script" uid="uid://bxlmsd8e3g2fh" path="res://bulb/bulb.gd" id="1_i2sy0"]
+[ext_resource type="Script" path="res://common/capsule.gd" id="2_capsule"]
+[ext_resource type="Texture2D" path="res://common/soft_light.tres" id="3_light"]
 
-[sub_resource type="SphereShape3D" id="SphereShape3D_4rivj"]
-radius = 0.21283175
+[sub_resource type="CircleShape2D" id="CircleShape2D_4rivj"]
+radius = 6.8
 
-[sub_resource type="SphereMesh" id="SphereMesh_i2sy0"]
-radius = 0.115
-height = 0.31
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_light"]
+blend_mode = 1
 
-[node name="Bulb" type="Area3D" groups=["bulbs"]]
+[node name="Bulb" type="Area2D" groups=["bulbs"]]
 collision_mask = 8
 script = ExtResource("1_i2sy0")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-shape = SubResource("SphereShape3D_4rivj")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_4rivj")
 
-[node name="OmniLight3D" type="OmniLight3D" parent="."]
-light_energy = 2.0
+[node name="Light" type="Sprite2D" parent="."]
+modulate = Color(1, 1, 1, 0.35)
+material = SubResource("CanvasItemMaterial_light")
+scale = Vector2(1.4, 1.4)
+texture = ExtResource("3_light")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-mesh = SubResource("SphereMesh_i2sy0")
+[node name="Core" type="Node2D" parent="."]
+script = ExtResource("2_capsule")
+size = Vector2(8, 8)
 
 [connection signal="area_entered" from="." to="." method="_on_area_entered"]

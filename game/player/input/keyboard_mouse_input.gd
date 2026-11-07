@@ -1,8 +1,7 @@
 class_name KeyboardMouseInput
 extends InputInterface
 
-var aim_origin: Node3D
-var camera: Camera3D
+var aim_origin: Node2D
 
 var _shoot_pressed: bool = false
 var _jump_pressed: bool = false
@@ -11,12 +10,11 @@ var _movement: Vector2 = Vector2.ZERO
 var _aim_direction: Vector2 = Vector2.ZERO
 
 
-func _init(origin: Node3D) -> void:
+func _init(origin: Node2D) -> void:
 	aim_origin = origin
 
 
 func update() -> void:
-	_update_camera()
 	if aim_origin.get_viewport().gui_get_focus_owner() is LineEdit:
 		_shoot_pressed = false
 		_jump_pressed = false
@@ -32,11 +30,6 @@ func update() -> void:
 
 	_movement = _compute_movement()
 	_aim_direction = _compute_aim_direction()
-
-
-func _update_camera() -> void:
-	if not is_instance_valid(camera):
-		camera = aim_origin.get_viewport().get_camera_3d()
 
 
 func _compute_movement() -> Vector2:
@@ -58,12 +51,7 @@ func _compute_movement() -> Vector2:
 
 
 func _compute_aim_direction() -> Vector2:
-	if camera == null:
-		return Vector2.ZERO
-
-	var origin_screen_pos := camera.unproject_position(aim_origin.global_position)
-	var mouse_pos := aim_origin.get_viewport().get_mouse_position()
-	return (mouse_pos - origin_screen_pos).normalized()
+	return (aim_origin.get_global_mouse_position() - aim_origin.global_position).normalized()
 
 
 func get_movement() -> Vector2:

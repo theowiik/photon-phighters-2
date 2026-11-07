@@ -48,7 +48,7 @@ func _run() -> void:
 	_expect(get_tree().get_nodes_in_group(Constants.BULBS_GROUP).is_empty())
 	await _win_round(game.players[1])
 	await _wait_for_state(Main.GameState.PICKING)
-	var picker := game.get_node("CrystalPicker") as CrystalPicker
+	var picker := game.get_node("UI/CrystalPicker") as CrystalPicker
 	_expect(picker.buttons.get_child_count() == 3)
 	_press_enter()
 	await _wait_for_state(Main.GameState.PLAYING)
@@ -151,6 +151,7 @@ func _test_bullet_skips_shooter() -> void:
 	var target := game.players[1]
 	for player in game.players:
 		player.protection_remaining = 0.0
+	target.global_position = shooter.global_position + Vector2.RIGHT * 96.0
 	_drop_bullet_on(shooter, shooter)
 	_drop_bullet_on(target, shooter)
 	for _frame in 20:
@@ -164,9 +165,9 @@ func _drop_bullet_on(target: Player, shooter: Player) -> void:
 	var bullet: Bullet = preload("res://bullet/bullet.tscn").instantiate()
 	bullet.shooter = shooter
 	bullet.team = shooter.team
-	bullet.velocity = Vector3.DOWN * 30.0
+	bullet.velocity = Vector2.DOWN * 960.0
 	game.add_child(bullet)
-	bullet.global_position = target.global_position + Vector3.UP * 4.0
+	bullet.global_position = target.global_position + Vector2.UP * 128.0
 
 
 func _add_bulb(team: Team) -> Bulb:

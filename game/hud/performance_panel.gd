@@ -123,9 +123,9 @@ func _report() -> String:
 		(
 			"Physics    active %d  pairs %d  islands %d  tick %d Hz"
 			% [
-				Performance.get_monitor(Performance.PHYSICS_3D_ACTIVE_OBJECTS),
-				Performance.get_monitor(Performance.PHYSICS_3D_COLLISION_PAIRS),
-				Performance.get_monitor(Performance.PHYSICS_3D_ISLAND_COUNT),
+				Performance.get_monitor(Performance.PHYSICS_2D_ACTIVE_OBJECTS),
+				Performance.get_monitor(Performance.PHYSICS_2D_COLLISION_PAIRS),
+				Performance.get_monitor(Performance.PHYSICS_2D_ISLAND_COUNT),
 				Engine.physics_ticks_per_second
 			]
 		),

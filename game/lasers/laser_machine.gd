@@ -1,7 +1,9 @@
 class_name LaserMachine
-extends Node3D
+extends Node2D
 
 const LASER_COUNT: int = 10
+const LENGTH: float = 3200.0
+const WIDTH: float = 2.0
 const SPREAD: float = 60.0
 const WAVE_SPEED: float = 2.0
 const WAVE_AMOUNT: float = 30.0
@@ -11,16 +13,16 @@ const HUE_SPEED: float = 0.3
 const SATURATION: float = 0.6
 const ALPHA: float = 0.25
 
-var laser_scene: PackedScene = load("res://lasers/laser.tscn")
-var lasers: Array[Laser] = []
+var lasers: Array[Line2D] = []
 
 
 func _ready() -> void:
 	for i in LASER_COUNT:
-		var laser: Laser = laser_scene.instantiate()
+		var laser := Line2D.new()
+		laser.points = [Vector2.ZERO, Vector2.UP * LENGTH]
+		laser.width = WIDTH
+		laser.use_parent_material = true
 		add_child(laser)
-
-		laser.rotation_degrees.y = -SPREAD / 2.0 + (SPREAD / (LASER_COUNT - 1)) * i
 		lasers.append(laser)
 
 
@@ -29,7 +31,8 @@ func _process(_delta: float) -> void:
 
 	for i in lasers.size():
 		var phase := float(i) / lasers.size() * TAU
-		lasers[i].rotation_degrees.x = sin(time * WAVE_SPEED + phase) * WAVE_AMOUNT
+		var fan := -SPREAD / 2.0 + (SPREAD / (LASER_COUNT - 1)) * i
+		lasers[i].rotation_degrees = fan + sin(time * WAVE_SPEED + phase) * WAVE_AMOUNT
 
 		var hue := HUE + HUE_SHIFT * sin(time * HUE_SPEED + phase)
-		lasers[i].set_color(Color.from_hsv(hue, SATURATION, 1.0, ALPHA))
+		lasers[i].default_color = Color.from_hsv(hue, SATURATION, 1.0, ALPHA)

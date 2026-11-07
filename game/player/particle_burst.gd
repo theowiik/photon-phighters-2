@@ -1,5 +1,5 @@
 class_name ParticleBurst
-extends CPUParticles3D
+extends CPUParticles2D
 
 
 func _ready() -> void:
