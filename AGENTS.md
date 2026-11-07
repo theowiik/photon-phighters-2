@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Photon Phighters 2 (internal name `project-epic-footsies-2`) is a 2.5D local multiplayer
+Photon Phighters 2 (internal name `project-epic-footsies-2`) is a 2D local multiplayer
 arena shooter built with Godot 4.7 and GDScript. Players fire light bullets from
 flashlights to recolor bulbs to their team color. The team with the most bulbs when the
 round timer runs out wins, and the loser picks a crystal (power-up).
@@ -65,19 +65,18 @@ validation where data enters the game (files, network, user input).
 ├── mise.toml          # Pinned tools and all tasks (run `mise tasks`)
 ├── pyproject.toml     # Pinned Python tools, locked in uv.lock
 ├── tools/             # Python scripts used by the mise tasks
-├── assets/            # Source art (.blend, .psd, .xcf); not loaded by Godot
+├── assets/            # Source art (.xcf); not loaded by Godot
 └── game/              # The Godot project (project.godot lives here)
-    ├── assets/        # Imported assets (models, fonts, maps, sounds)
+    ├── assets/        # Imported assets (fonts, sounds)
     ├── main/          # Main scene, round manager and camera
-    ├── maps/          # One scene per map: model, spawn points and out-of-bounds area
-    │   └── pieces/    # Primitive map pieces (box, platform, wall, ramp, cylinder)
+    ├── maps/          # One scene per map: pieces, spawn points and out-of-bounds area
+    │   └── pieces/    # Primitive map pieces (box, platform, wall, ramp, circle)
     ├── player/        # Player scene, flashlight, input, movement and shooting
     ├── crystals/      # Crystal registry and the crystal picker
     ├── hud/           # HUD and dev console
     ├── bulb/          # Bulbs that bullets recolor
     ├── bullet/        # Light bullets
-    ├── lasers/        # Laser and strobe light effects
-    └── common/        # Shared constants, groups and teams
+    └── common/        # Shared constants, groups, teams and the Capsule primitive
 ```
 
 Each feature folder keeps a scene and its script side by side (`player.tscn` next to
@@ -106,8 +105,9 @@ Actions) runs `mise run check` and `mise run test` on all three systems and
   `ROUND_OVER`, `PICKING`, `MATCH_OVER`). It pauses the tree outside `TITLE` and
   `PLAYING`, starts rounds through `RoundManager`, shows the crystal picker to the round
   loser and applies the picked crystal. The title screen runs a bot match.
-- `main/follow_camera.gd` zooms to fit both players and shakes on hits and knockouts.
-  `main/sky.gdshader` and `main/post_process.gdshader` give the scene its look.
+- `main/follow_camera.gd` zooms to fit both players.
+- Everything is drawn with primitives. `common/capsule.gd` draws circles and capsules
+  (body parts, bulbs, bullets) and `MapPiece` draws its own shape.
 - UI uses the project theme in `hud/ui_theme.tres`; style labels with its type
   variations (`Banner`, `Score`, `Clock`, `Heading`, `Subtle`) instead of per-node
   overrides.
@@ -118,7 +118,7 @@ Actions) runs `mise run check` and `mise run test` on all three systems and
 - `Main` instantiates the map scene set in its `map_scene` export and moves the players
   to the map's `Spawns` markers.
 - `player/player.gd` wires together input, movement, shooting and animation.
-  `player/player_body.gd` paints the body in the team color and flashes it on hits.
+  `player/player_body.gd` paints the body in the team color.
 - Player abilities use the decorator pattern:
   - Movement: `MoverInterface` → `BaseMover`, wrapped by subclasses of `MoverDecorator`
     in `player/movement/decorators/`. Decorators adjust a `MovementContext` (speed,
@@ -144,7 +144,7 @@ Actions) runs `mise run check` and `mise run test` on all three systems and
 
 1. Duplicate `maps/map_template.tscn` and rename the root node to match the file.
 1. Drag pieces from `maps/pieces/` into `Geometry`. Resize them with `size` in the
-   Inspector, not with the scale gizmo, so collision matches the mesh.
+   Inspector, not with the scale gizmo, so collision matches the drawing.
 1. Move the `Spawns` markers and the `OutOfBounds` area, then set the scene as
    `map_scene` on `Main`.
 
@@ -156,7 +156,7 @@ Actions) runs `mise run check` and `mise run test` on all three systems and
 - Every reusable script declares a `class_name`.
 - File and directory names are `snake_case` (`ALL_CAPS` for files like `README.md`).
   Scene files match their root node (`player.tscn` → `Player`). Source art in the root
-  `assets/` keeps its names, because `.blend` files link textures by file name.
+  `assets/` keeps its original names.
 - Code must pass `gdformat` and `gdlint`. Use tabs for indentation in GDScript.
 - Commit the `.uid` file next to each script, since scenes reference scripts by UID.
 - Do not edit `.godot/` or `build/`. They are generated.

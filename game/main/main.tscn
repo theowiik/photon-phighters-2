@@ -5,50 +5,13 @@
 [ext_resource type="Script" uid="uid://d0f1w2mq5h6r7" path="res://main/follow_camera.gd" id="2_0wfyh"]
 [ext_resource type="PackedScene" uid="uid://bk4k7em2j8d1p" path="res://main/round_manager.tscn" id="2_o6xl0"]
 [ext_resource type="PackedScene" uid="uid://dacw2gn4smkwj" path="res://hud/hud.tscn" id="5_tbgi4"]
-[ext_resource type="PackedScene" uid="uid://bioo4dk8jqu1w" path="res://lasers/laser_machine.tscn" id="8_tipki"]
-[ext_resource type="PackedScene" uid="uid://ymkakny8f3x5" path="res://lasers/strobe_machine.tscn" id="9_85g3d"]
 [ext_resource type="PackedScene" uid="uid://pwcxejyz3cem9" path="res://maps/map_template.tscn" id="10_choun"]
-[ext_resource type="Shader" uid="uid://csuebfhjwobb6" path="res://main/sky.gdshader" id="11_sky"]
-[ext_resource type="Shader" uid="uid://dg780ip5i0lt7" path="res://main/post_process.gdshader" id="12_post"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_sky"]
-shader = ExtResource("11_sky")
-
-[sub_resource type="Environment" id="Environment_tbgi4"]
-background_mode = 3
-glow_enabled = true
-glow_intensity = 1.0
-glow_bloom = 0.05
-glow_hdr_threshold = 1.0
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_post"]
-shader = ExtResource("12_post")
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_tefeu")
 map_scene = ExtResource("10_choun")
 
-[node name="Sky" type="CanvasLayer" parent="."]
-layer = -1
-
-[node name="Background" type="ColorRect" parent="Sky"]
-material = SubResource("ShaderMaterial_sky")
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-
 [node name="RoundManager" parent="." instance=ExtResource("2_o6xl0")]
-
-[node name="LaserMachine" parent="." instance=ExtResource("8_tipki")]
-z_index = -1
-position = Vector2(432, 260)
-
-[node name="LaserMachine2" parent="." instance=ExtResource("8_tipki")]
-z_index = -1
-position = Vector2(-144, 312)
 
 [node name="Player1" parent="." instance=ExtResource("1_o5qli")]
 position = Vector2(-512, 40)
@@ -61,21 +24,6 @@ display_name = "P2"
 process_mode = 3
 script = ExtResource("2_0wfyh")
 
-[node name="StrobeMachine" parent="." instance=ExtResource("9_85g3d")]
-position = Vector2(-216, -154)
-
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Environment_tbgi4")
-
 [node name="UI" type="CanvasLayer" parent="."]
-
-[node name="PostProcess" type="ColorRect" parent="UI"]
-material = SubResource("ShaderMaterial_post")
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
 
 [node name="HUD" parent="UI" instance=ExtResource("5_tbgi4")]

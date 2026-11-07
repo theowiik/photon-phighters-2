@@ -6,9 +6,6 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_dqtkv"]
 size = Vector2(28, 12)
 
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_beam"]
-blend_mode = 1
-
 [node name="Flashlight" type="RigidBody2D"]
 collision_layer = 4
 script = ExtResource("1_h1fso")
@@ -21,11 +18,6 @@ shape = SubResource("RectangleShape2D_dqtkv")
 position = Vector2(26, 0)
 
 [node name="Visuals" type="Node2D" parent="."]
-
-[node name="Beam" type="Polygon2D" parent="Visuals"]
-material = SubResource("CanvasItemMaterial_beam")
-polygon = PackedVector2Array(23, -5, 170, -56, 170, 56, 23, 5)
-vertex_colors = PackedColorArray(1, 1, 1, 0.3, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0.3)
 
 [node name="Barrel" type="Polygon2D" parent="Visuals"]
 color = Color(0.36, 0.38, 0.5, 1)

@@ -2,7 +2,7 @@
 class_name Capsule
 extends Node2D
 ## A filled capsule drawn in code, lying along its longer side. A square size draws a
-## circle. Colors above 1.0 glow.
+## circle.
 
 @export var size: Vector2 = Vector2(16.0, 16.0):
 	set(value):

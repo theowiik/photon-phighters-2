@@ -2,13 +2,10 @@ class_name Bullet
 extends Area2D
 
 const BULB_SCENE: PackedScene = preload("res://bulb/bulb.tscn")
-const HIT_BURST_SCENE: PackedScene = preload("res://player/hit_burst.tscn")
 const BULB_MERGE_RADIUS: float = 24.0
 const GRAVITY: float = 2880.0
 const WOBBLE_FREQUENCY: float = 12.0
 const HIT_KNOCKBACK: float = 144.0
-const GLOW: float = 6.0
-const LIGHT_ALPHA: float = 0.25
 
 var team: Team = Team.white()
 var shooter: Player
@@ -19,14 +16,12 @@ var _age: float = 0.0
 var _hit: bool = false
 
 @onready var core: Capsule = $Core
-@onready var light: Sprite2D = $Light
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 @onready var _shape_query: PhysicsShapeQueryParameters2D = PhysicsShapeQueryParameters2D.new()
 
 
 func _ready() -> void:
-	core.color = team.color * Color(GLOW, GLOW, GLOW)
-	light.modulate = Color(team.color, LIGHT_ALPHA)
+	core.color = team.color
 
 	_shape_query.shape = collision_shape.shape
 	_shape_query.collision_mask = collision_mask
@@ -90,19 +85,10 @@ func _handle_hit(body: Node2D) -> void:
 	if body is Player:
 		body.take_damage(damage)
 		body.apply_impulse(velocity.normalized() * HIT_KNOCKBACK)
-		_spawn_hit_burst()
 	else:
 		_paint()
 
 	queue_free()
-
-
-func _spawn_hit_burst() -> void:
-	var burst: ParticleBurst = HIT_BURST_SCENE.instantiate()
-	burst.color = team.color
-	burst.direction = velocity.normalized()
-	get_tree().current_scene.add_child(burst)
-	burst.global_position = global_position
 
 
 func _paint() -> void:

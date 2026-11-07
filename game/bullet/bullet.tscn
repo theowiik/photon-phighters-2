@@ -2,23 +2,14 @@
 
 [ext_resource type="Script" uid="uid://d00uqlh5tao8s" path="res://bullet/bullet.gd" id="1_script"]
 [ext_resource type="Script" path="res://common/capsule.gd" id="2_capsule"]
-[ext_resource type="Texture2D" path="res://common/soft_light.tres" id="3_light"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_3ndsa"]
 radius = 3.4
-
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_light"]
-blend_mode = 1
 
 [node name="Bullet" type="Area2D" groups=["bullets"]]
 collision_layer = 8
 collision_mask = 3
 script = ExtResource("1_script")
-
-[node name="Light" type="Sprite2D" parent="."]
-material = SubResource("CanvasItemMaterial_light")
-scale = Vector2(0.6, 0.6)
-texture = ExtResource("3_light")
 
 [node name="Core" type="Node2D" parent="."]
 script = ExtResource("2_capsule")
